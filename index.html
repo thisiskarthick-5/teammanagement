@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | TEAMSYNC</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 440px;
+            padding: 3rem;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .logo-box {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.75rem;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 20px rgba(5, 150, 105, 0.2);
+        }
+
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-dim);
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            background: #f1f5f9;
+            border: 1.5px solid transparent;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            background: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            height: 54px;
+            font-size: 1rem;
+            margin-top: 2rem;
+        }
+
+        .demo-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: #ecfdf5;
+            color: var(--primary);
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="logo-box">
+            <i class="fas fa-leaf"></i>
+        </div>
+        <h1>TEAMSYNC</h1>
+        <p class="subtitle">Efficient Team Collaboration Platform</p>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Professional Email</label>
+                <input type="email" id="email" placeholder="name@company.com" required value="admin@team.com">
+            </div>
+
+            <div class="form-group">
+                <label>System Role</label>
+                <select id="role">
+                    <option value="admin">Administrator / Lead</option>
+                    <option value="member">Team Member</option>
+                </select>
+            </div>
+
+            <div id="errorMsg" class="error-msg"
+                style="text-align: center; margin-bottom: 1rem; color: #ef4444; font-weight: 600;"></div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                Get Started <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
+            </button>
+        </form>
+
+        <div class="demo-badge">
+            <i class="fas fa-info-circle"></i> DEMO: Use <b>admin@team.com</b>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getAllUsers, createUser, setCurrentUser, getCurrentUser } from './js/data.js';
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const role = document.getElementById('role').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            try {
+                const users = await getAllUsers();
+
+                // If database is empty, let's create the default admin
+                if (users.length === 0) {
+                    console.log("Seeding initial admin user...");
+                    await createUser({
+                        id: 'TM-001',
+                        name: 'Admin User',
+                        role: 'admin',
+                        email: 'admin@team.com',
+                        streak: 0,
+                        longestStreak: 0,
+                        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
+                    });
+                    // Refresh users after seeding
+                    const freshUsers = await getAllUsers();
+                    users.push(...freshUsers);
+                }
+
+                const user = users.find(u => u.email === email && u.role === role);
+
+                if (user) {
+                    setCurrentUser(user);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = "User not found. Ensure you are using admin@team.com.";
+                }
+            } catch (err) {
+                console.error(err);
+                errorMsg.style.display = 'block';
+                errorMsg.innerHTML = `<strong>Error:</strong> ${err.message || 'Unknown Firebase Error'}<br><small>Please check your Firestore rules.</small>`;
+            }
+        });
+
+        // Redirect if already logged in
+        if (getCurrentUser()) {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+
+</html>

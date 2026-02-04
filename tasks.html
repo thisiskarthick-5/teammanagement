@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks | TEAMSYNC</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .task-card {
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .task-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .priority-high {
+            color: #ef4444;
+            font-weight: 800;
+        }
+
+        .priority-medium {
+            color: #f59e0b;
+            font-weight: 800;
+        }
+
+        .priority-low {
+            color: #10b981;
+            font-weight: 800;
+        }
+
+        .status-pill {
+            padding: 0.4rem 0.8rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-approved {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .status-pending {
+            background: #fefce8;
+            color: #a16207;
+        }
+
+        .status-action {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .status-default {
+            background: #f1f5f9;
+            color: #475569;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="main-content">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+            <div>
+                <h1>Project Tasks</h1>
+                <p class="text-dim" id="taskSubtext">Manage and track work progress.</p>
+            </div>
+            <button class="btn btn-primary" id="addTaskBtn" onclick="openModal('taskModal')">
+                <i class="fas fa-plus"></i> Create Task
+            </button>
+        </header>
+
+        <div id="taskList">
+            <!-- Dynamic Tasks -->
+        </div>
+    </main>
+
+    <!-- Admin: Create Task Modal -->
+    <div id="taskModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="margin: 0;">Assign New Task</h2>
+                <button onclick="closeModal('taskModal')"
+                    style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.5rem;">&times;</button>
+            </div>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label>Task Objective</label>
+                    <input type="text" id="taskTitle" required placeholder="Describe the specific goal...">
+                </div>
+                <div class="form-group">
+                    <label>Assignee</label>
+                    <select id="assignTo" required></select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label>Deadline</label>
+                        <input type="date" id="deadline" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority Level</label>
+                        <select id="priority">
+                            <option value="High">High Priority</option>
+                            <option value="Medium" selected>Medium Priority</option>
+                            <option value="Low">Low Priority</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1; height: 50px;">Deploy Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Member: Submit Proof Modal -->
+    <div id="proofModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="margin: 0;">Submit Proof of Work</h2>
+                <button onclick="closeModal('proofModal')"
+                    style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.5rem;">&times;</button>
+            </div>
+            <form id="proofForm">
+                <input type="hidden" id="submitTaskId">
+                <div class="form-group">
+                    <label>Artifact URL (GitHub, Cloud Storage, etc.)</label>
+                    <input type="url" id="proofLink" required placeholder="https://example.com/artifact">
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; height: 50px; margin-top: 1rem;">Complete Submission</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin: Query Modal -->
+    <div id="queryModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+                <h2 style="margin: 0;">Request Corrections</h2>
+                <button onclick="closeModal('queryModal')"
+                    style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.5rem;">&times;</button>
+            </div>
+            <form id="queryForm">
+                <input type="hidden" id="queryTaskId">
+                <input type="hidden" id="queryUserId">
+                <div class="form-group">
+                    <label>Feedback & Requirements</label>
+                    <textarea id="queryMessage" required placeholder="Explain what needs to be changed..."
+                        style="min-height: 120px;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; background: #ef4444; color: white; height: 50px; margin-top: 1rem;">Send
+                    Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getTasks, getAllUsers, createTask, submitTaskProof, approveTask, rejectTask, getCurrentUser } from './js/data.js';
+        import { initSidebar } from './js/sidebar.js';
+
+        document.addEventListener('DOMContentLoaded', initSidebar);
+
+        const currentUser = getCurrentUser();
+
+        async function renderTasks() {
+            try {
+                let tasks = await getTasks();
+                const users = await getAllUsers();
+                const list = document.getElementById('taskList');
+
+                if (currentUser.role === 'member') {
+                    tasks = tasks.filter(t => t.assignedTo === currentUser.id);
+                    document.getElementById('addTaskBtn').style.display = 'none';
+                    document.getElementById('taskSubtext').innerText = 'Your assigned tasks and their progress.';
+                }
+
+                if (tasks.length === 0) {
+                    list.innerHTML = `<div class="glass" style="padding: 3rem; text-align: center; color: var(--text-dim);">No tasks found.</div>`;
+                    return;
+                }
+
+                list.innerHTML = tasks.map(t => {
+                    const assignee = users.find(u => u.id === t.assignedTo);
+                    let statusClass = 'status-default';
+                    if (t.status === 'Approved') statusClass = 'status-approved';
+                    if (t.status === 'Action Required') statusClass = 'status-action';
+                    if (t.status === 'Completed' || t.status === 'In Progress') statusClass = 'status-pending';
+
+                    return `
+                    <div class="glass task-card animate-in">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem;">
+                                    <span class="status-pill ${statusClass}">${t.status}</span>
+                                    <h2 style="margin: 0; font-size: 1.35rem;">${t.title}</h2>
+                                </div>
+                                <div style="display: flex; gap: 1.5rem; font-size: 0.85rem; color: var(--text-dim); font-weight: 600;">
+                                    <span><i class="far fa-calendar-alt" style="margin-right: 0.4rem;"></i> Due ${t.deadline}</span>
+                                    <span class="priority-${t.priority.toLowerCase()}"><i class="fas fa-flag" style="margin-right: 0.4rem;"></i> ${t.priority} Priority</span>
+                                </div>
+                            </div>
+                            
+                            ${currentUser.role === 'admin' ? `
+                                <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: #f8fafc; border-radius: 1rem; border: 1px solid #e2e8f0;">
+                                    <img src="${assignee?.avatar || ''}" style="width: 38px; height: 38px; border-radius: 50%; border: 2px solid white; box-shadow: var(--shadow-sm);">
+                                    <div style="line-height: 1.2;">
+                                        <div style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Assignee</div>
+                                        <div style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);">${assignee ? assignee.name : 'Unknown'}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div style="background: #f8fafc; border-radius: 1.25rem; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0;">
+                            <div>
+                                ${t.submission ? `
+                                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                                        <span style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Submission Link</span>
+                                        <a href="${t.submission.link}" target="_blank" style="color: var(--primary); font-weight: 700; font-size: 0.95rem; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                                            <i class="fas fa-external-link-alt"></i> Access Project Artifact
+                                        </a>
+                                    </div>
+                                ` : '<span class="text-dim" style="font-weight: 600; font-size: 0.9rem;"><i class="fas fa-info-circle"></i> Waiting for submission</span>'}
+                            </div>
+                            
+                            <div style="display: flex; gap: 1rem;">
+                                ${currentUser.role === 'member' && t.status !== 'Approved' ? `
+                                    <button class="btn btn-primary" style="padding: 0.8rem 1.5rem;" onclick="window.openProofModal('${t.id}')">
+                                        ${t.status === 'Action Required' ? 'Re-upload Artifact' : 'Submit Artifact'}
+                                    </button>
+                                ` : ''}
+
+                                ${currentUser.role === 'admin' && (t.status === 'Completed' || t.status === 'Action Required') ? `
+                                    <button class="btn btn-secondary" style="padding: 0.8rem 1.5rem;" onclick="window.handleApprove('${t.id}', '${t.assignedTo}')">
+                                        Approve
+                                    </button>
+                                    <button class="btn" style="padding: 0.8rem 1.5rem; background: #fee2e2; color: #ef4444; font-weight: 700;" onclick="window.openQueryModal('${t.id}', '${t.assignedTo}')">
+                                        Reject
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        ${t.submission && t.submission.feedback ? `
+                            <div style="padding: 1.25rem; background: #fff1f2; border-radius: 1rem; border-left: 5px solid #ef4444; font-size: 0.95rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem; color: #991b1b; font-weight: 800; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-exclamation-triangle"></i> REJECTION FEEDBACK
+                                </div>
+                                <div style="color: #b91c1c; font-weight: 500; line-height: 1.5;">${t.submission.feedback}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `}).join('');
+            } catch (err) {
+                console.error("Error rendering tasks:", err);
+            }
+        }
+
+        window.openModal = (id) => { document.getElementById(id).style.display = 'flex'; };
+        window.closeModal = (id) => { document.getElementById(id).style.display = 'none'; };
+
+        window.openProofModal = (taskId) => {
+            document.getElementById('submitTaskId').value = taskId;
+            window.openModal('proofModal');
+        };
+
+        window.openQueryModal = (taskId, userId) => {
+            document.getElementById('queryTaskId').value = taskId;
+            document.getElementById('queryUserId').value = userId;
+            window.openModal('queryModal');
+        };
+
+        window.handleApprove = async (taskId, userId) => {
+            try {
+                const confirmed = confirm("Are you sure you want to approve this work?");
+                if (!confirmed) return;
+                await approveTask(taskId, userId);
+                await renderTasks();
+            } catch (err) {
+                console.error("Error approving task:", err);
+            }
+        };
+
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await createTask({
+                    title: document.getElementById('taskTitle').value,
+                    assignedTo: document.getElementById('assignTo').value,
+                    deadline: document.getElementById('deadline').value,
+                    priority: document.getElementById('priority').value
+                });
+                window.closeModal('taskModal');
+                await renderTasks();
+            } catch (err) {
+                console.error("Error creating task:", err);
+            }
+        });
+
+        document.getElementById('proofForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await submitTaskProof(
+                    document.getElementById('submitTaskId').value,
+                    {
+                        link: document.getElementById('proofLink').value,
+                        date: new Date().toISOString()
+                    }
+                );
+                window.closeModal('proofModal');
+                await renderTasks();
+            } catch (err) {
+                console.error("Error submitting proof:", err);
+            }
+        });
+
+        document.getElementById('queryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await rejectTask(
+                    document.getElementById('queryTaskId').value,
+                    document.getElementById('queryUserId').value,
+                    document.getElementById('queryMessage').value
+                );
+                window.closeModal('queryModal');
+                document.getElementById('queryForm').reset();
+                await renderTasks();
+            } catch (err) {
+                console.error("Error sending query:", err);
+            }
+        });
+
+        // Fill user dropdown for admin
+        async function loadAssignees() {
+            if (currentUser.role === 'admin') {
+                try {
+                    const users = await getAllUsers();
+                    document.getElementById('assignTo').innerHTML = users
+                        .filter(u => u.role === 'member')
+                        .map(u => `<option value="${u.id}">${u.name} (${u.id})</option>`).join('');
+                } catch (err) {
+                    console.error("Error loading assignees:", err);
+                }
+            }
+        }
+
+        loadAssignees();
+        renderTasks();
+    </script>
+</body>
+
+</html>

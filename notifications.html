@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | TEAMSYNC</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .notification-card {
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .notification-card:hover {
+            transform: translateX(8px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .notification-card.unread {
+            border-left: 6px solid var(--primary);
+            background: #f0fdf4;
+        }
+
+        .icon-box {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .icon-approval {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #d1fae5;
+        }
+
+        .icon-query {
+            background: #fff1f2;
+            color: #e11d48;
+            border: 1px solid #ffe4e6;
+        }
+
+        .icon-task {
+            background: #f8fafc;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+    </style>
+    </style>
+</head>
+
+<body>
+    <main class="main-content">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+            <div>
+                <h1>Notifications</h1>
+                <p class="text-dim">Updates on your tasks and messages from admin.</p>
+            </div>
+            <button class="btn glass" onclick="window.markAllRead()">
+                <i class="fas fa-check-double"></i> Mark all as read
+            </button>
+        </header>
+
+        <div id="notificationList">
+            <div class="glass" style="padding: 3rem; text-align: center; color: var(--text-dim);">
+                <i class="fas fa-bell-slash" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.2;"></i>
+                <p>Loading notifications...</p>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { getNotifications, markNotificationAsRead, getCurrentUser } from './js/data.js';
+        import { initSidebar } from './js/sidebar.js';
+
+        document.addEventListener('DOMContentLoaded', initSidebar);
+
+        const user = getCurrentUser();
+
+        async function renderNotifications() {
+            try {
+                const notifications = await getNotifications(user.id);
+                const list = document.getElementById('notificationList');
+
+                if (notifications.length === 0) {
+                    list.innerHTML = `
+                        <div class="glass" style="padding: 4rem; text-align: center; color: var(--text-dim);">
+                            <i class="fas fa-bell-slash" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.2;"></i>
+                            <p>You have no notifications yet.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                list.innerHTML = notifications.map(n => {
+                    let iconClass = 'icon-task';
+                    let icon = 'fa-bell';
+
+                    if (n.type === 'approval') {
+                        iconClass = 'icon-approval';
+                        icon = 'fa-check-circle';
+                    } else if (n.type === 'query') {
+                        iconClass = 'icon-query';
+                        icon = 'fa-question-circle';
+                    }
+
+                    const date = new Date(n.createdAt);
+                    const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    return `
+                        <div class="glass notification-card ${n.read ? '' : 'unread'} animate-in" onclick="window.handleRead('${n.id}', '${n.taskId}')">
+                            <div class="icon-box ${iconClass}">
+                                <i class="fas ${icon}"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 800; font-size: 1.1rem; color: var(--text-main);">
+                                        ${n.type === 'approval' ? 'Milestone Approved' : 'Action Required'}
+                                    </span>
+                                    <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase;">${timeStr}</span>
+                                </div>
+                                <p style="font-size: 0.95rem; color: #475569; line-height: 1.5; margin: 0;">${n.message}</p>
+                                ${n.taskId ? `
+                                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
+                                        <span style="color: var(--primary); font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+                                            Inspect Task Lifecycle <i class="fas fa-arrow-right" style="font-size: 0.7rem;"></i>
+                                        </span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error("Error loading notifications:", err);
+            }
+        }
+
+        window.handleRead = async (id, taskId) => {
+            await markNotificationAsRead(id);
+            if (taskId) {
+                window.location.href = 'tasks.html';
+            } else {
+                renderNotifications();
+            }
+        };
+
+        window.markAllRead = async () => {
+            const notifications = await getNotifications(user.id);
+            for (const n of notifications.filter(notif => !notif.read)) {
+                await markNotificationAsRead(n.id);
+            }
+            renderNotifications();
+        };
+
+        renderNotifications();
+    </script>
+</body>
+
+</html>

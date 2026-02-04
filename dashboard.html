@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | TEAMSYNC</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <main class="main-content">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+            <div>
+                <h1 id="welcomeText">Welcome back, Admin</h1>
+                <p class="text-dim">Here's what's happening with the team today.</p>
+            </div>
+            <div id="dateDisplay" style="text-align: right;">
+                <div style="font-weight: 600;">February 4, 2026</div>
+                <div class="text-dim">Wednesday</div>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <!-- Stats will be injected here -->
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+            <div id="leftColumn">
+                <!-- Activity or Performance charts -->
+                <div class="glass" style="padding: 2rem; margin-bottom: 2rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h2 style="margin: 0;">Team Activity</h2>
+                        <span class="text-dim" style="font-size: 0.85rem; font-weight: 600;">Real-time updates</span>
+                    </div>
+                    <div id="activityList">
+                        <div class="text-dim">Loading activity...</div>
+                    </div>
+                </div>
+
+                <div id="adminAnalytics" class="glass" style="padding: 2rem; display: none;">
+                    <h2 style="margin-bottom: 2rem;">Member Performance</h2>
+                    <div id="performanceList" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                        <!-- Performance bars injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="rightColumn">
+                <div class="glass"
+                    style="padding: 2rem; margin-bottom: 2rem; background: var(--primary); color: white; border: none;">
+                    <h2 style="margin-bottom: 1.5rem;">Quick Actions</h2>
+                    <div id="quickActions" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <button class="btn btn-primary" onclick="openTaskModal()"
+                            style="width: 100%; border-radius: 12px; height: 50px;">
+                            <i class="fas fa-plus"></i> Assign New Task
+                        </button>
+                        <button class="btn" onclick="window.location.href='members.html'"
+                            style="width: 100%; border-radius: 12px; height: 50px; background: rgba(255,255,255,0.1); color: white;">
+                            <i class="fas fa-user-plus"></i> Add Team Member
+                        </button>
+                        <button class="btn" onclick="window.location.href='attendance.html'"
+                            style="width: 100%; border-radius: 12px; height: 50px; background: rgba(255,255,255,0.1); color: white;">
+                            <i class="fas fa-calendar-check"></i> Check Attendance
+                        </button>
+                    </div>
+                </div>
+
+                <div id="adminAttendance" class="glass"
+                    style="padding: 2rem; display: none; background: #ecfdf5; border-color: #34d399;">
+                    <h3 style="margin-bottom: 0.5rem; color: #064e3b;">Live Presence</h3>
+                    <div id="presenceCount" style="font-size: 3rem; font-weight: 800; color: var(--primary);">0/0</div>
+                    <p style="color: #065f46; font-weight: 600; opacity: 0.8;">Members active today</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Task Modal -->
+    <div id="taskModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="margin: 0;">Create New Task</h2>
+                <button onclick="closeTaskModal()"
+                    style="background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.5rem;"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label>Task Description</label>
+                    <input type="text" id="taskTitle" required placeholder="e.g. Design System Audit">
+                </div>
+                <div class="form-group">
+                    <label>Assignee</label>
+                    <select id="assignTo" required></select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label>Target Date</label>
+                        <input type="date" id="deadline" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="priority">
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; height: 54px; margin-top: 1rem; border-radius: 14px;">Deploy Task</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getCurrentUser, getAllUsers, getTasks, getAllAttendance, createTask } from './js/data.js';
+        import { initSidebar } from './js/sidebar.js';
+
+        // Wait for DOM to init sidebar
+        document.addEventListener('DOMContentLoaded', initSidebar);
+
+        const user = getCurrentUser();
+        if (user) {
+            document.getElementById('welcomeText').innerText = `Welcome back, ${user.name.split(' ')[0]}`;
+
+            // --- Modal Functions ---
+            window.openTaskModal = async () => {
+                document.getElementById('taskModal').style.display = 'flex';
+                // Load users for the dropdown
+                const users = await getAllUsers();
+                const members = users.filter(u => u.role === 'member');
+                const select = document.getElementById('assignTo');
+                select.innerHTML = members.map(m => `<option value="${m.id}">${m.name} (${m.id})</option>`).join('');
+            };
+
+            window.closeTaskModal = () => {
+                document.getElementById('taskModal').style.display = 'none';
+            };
+
+            document.getElementById('taskForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const taskData = {
+                    title: document.getElementById('taskTitle').value,
+                    assignedTo: document.getElementById('assignTo').value,
+                    deadline: document.getElementById('deadline').value,
+                    priority: document.getElementById('priority').value
+                };
+                await createTask(taskData);
+                closeTaskModal();
+                loadStats(); // Refresh dashboard
+            });
+
+            async function loadStats() {
+                try {
+                    const tasks = await getTasks();
+                    const users = await getAllUsers();
+                    const attendance = await getAllAttendance();
+
+                    const statsGrid = document.querySelector('.stats-grid');
+                    const isMember = user.role === 'member';
+                    const members = users.filter(u => u.role === 'member');
+
+                    const stats = isMember ? [
+                        { label: 'My Streak', value: user.streak || 0, icon: 'fa-fire', color: '#f59e0b' },
+                        { label: 'Pending Tasks', value: tasks.filter(t => t.assignedTo === user.id && t.status !== 'Approved').length, icon: 'fa-clock', color: '#10b981' },
+                        { label: 'Approved Work', value: tasks.filter(t => t.assignedTo === user.id && t.status === 'Approved').length, icon: 'fa-medal', color: '#06b6d4' },
+                        { label: 'System Rank', value: '#1', icon: 'fa-trophy', color: '#8b5cf6' }
+                    ] : [
+                        { label: 'Team Streak', value: members.length > 0 ? Math.round(members.reduce((acc, m) => acc + (m.streak || 0), 0) / members.length) : 0, icon: 'fa-bolt', color: '#f59e0b' },
+                        { label: 'Total Pending', value: tasks.filter(t => t.status !== 'Approved').length, icon: 'fa-tasks', color: '#10b981' },
+                        { label: 'Daily Activity', value: `${attendance.filter(a => a.date === new Date().toISOString().split('T')[0]).length}/${members.length}`, icon: 'fa-user-check', color: '#06b6d4' },
+                        { label: 'Work Velocity', value: '88%', icon: 'fa-chart-line', color: '#8b5cf6' }
+                    ];
+
+                    statsGrid.innerHTML = stats.map(s => `
+                        <div class="glass stat-card shadow-sm">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.25rem;">
+                                <div style="width: 48px; height: 48px; background: ${s.color}10; color: ${s.color}; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                    <i class="fas ${s.icon}"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-dim" style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">${s.label}</div>
+                                <div style="font-size: 1.85rem; font-weight: 800; color: var(--text-main); line-height: 1;">${s.value}</div>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    // --- Admin Specific UI ---
+                    if (user.role === 'admin') {
+                        document.getElementById('adminAnalytics').style.display = 'block';
+                        document.getElementById('adminAttendance').style.display = 'block';
+
+                        const today = new Date().toISOString().split('T')[0];
+                        const presentToday = attendance.filter(a => a.date === today).length;
+                        document.getElementById('presenceCount').innerText = `${presentToday}/${members.length}`;
+
+                        const performanceList = document.getElementById('performanceList');
+                        performanceList.innerHTML = members.map(m => {
+                            const memberTasks = tasks.filter(t => t.assignedTo === m.id);
+                            const completionRate = memberTasks.length > 0 ? Math.round((memberTasks.filter(t => t.status === 'Approved').length / memberTasks.length) * 100) : 0;
+                            return `
+                                <div style="padding: 1.25rem; background: #f8fafc; border-radius: 1rem; border: 1px solid #e2e8f0;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main);">
+                                        <span>${m.name}</span>
+                                        <span style="color: var(--primary);">${completionRate}%</span>
+                                    </div>
+                                    <div style="height: 10px; background: #cbd5e1; border-radius: 10px; overflow: hidden;">
+                                        <div style="width: ${completionRate}%; height: 100%; background: var(--primary); border-radius: 10px; transition: width 0.5s ease;"></div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+
+                        // Activity List
+                        const activityList = document.getElementById('activityList');
+                        const lastTasks = tasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+                        activityList.innerHTML = lastTasks.map(t => {
+                            const assignee = users.find(u => u.id === t.assignedTo);
+                            return `
+                                <div style="display: flex; gap: 1.25rem; align-items: center; padding: 1.25rem 0; border-bottom: 1px solid #f1f5f9;">
+                                    <img src="${assignee?.avatar || ''}" style="width: 44px; height: 44px; border-radius: 12px; box-shadow: var(--shadow-sm);">
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 700; color: var(--text-main); font-size: 1rem;">${t.title}</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-dim);">Assigned to <b>${assignee?.name || 'Member'}</b></div>
+                                    </div>
+                                    <div style="padding: 0.5rem 1rem; border-radius: 100px; font-size: 0.75rem; font-weight: 800; background: #f1f5f9; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;">
+                                        ${t.status}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('') || '<div class="text-dim">No recent activity</div>';
+                    } else {
+                        // Member Activity List (Personal)
+                        const activityList = document.getElementById('activityList');
+                        const myRecentTasks = tasks.filter(t => t.assignedTo === user.id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+                        activityList.innerHTML = myRecentTasks.map(t => `
+                            <div style="display: flex; gap: 1.25rem; align-items: center; padding: 1.25rem 0; border-bottom: 1px solid #f1f5f9;">
+                                <div style="width: 44px; height: 44px; background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                                    <i class="fas fa-clipboard-check"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 700; color: var(--text-main); font-size: 1rem;">${t.title}</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-dim);">Status: <b>${t.status}</b></div>
+                                </div>
+                                <button onclick="window.location.href='tasks.html'" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: var(--bg-main); font-weight: 700; border-radius: 10px;">VIEW</button>
+                            </div>
+                        `).join('') || '<div class="text-dim">No recent tasks</div>';
+                    }
+                } catch (err) {
+                    console.error("Error loading dashboard stats:", err);
+                }
+            }
+            loadStats();
+        }
+    </script>
+</body>
+
+</html>
