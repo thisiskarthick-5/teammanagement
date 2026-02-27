@@ -70,7 +70,7 @@
 
 <body>
     <main class="main-content">
-        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+        <header class="responsive-flex" style="margin-bottom: 2.5rem;">
             <div>
                 <h1>Daily Attendance</h1>
                 <p class="text-dim">Stay consistent to maintain your streak.</p>
@@ -80,7 +80,7 @@
             </button>
         </header>
 
-        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+        <div class="responsive-grid" style="grid-template-columns: 1fr 2fr; gap: 2rem;">
             <div class="streak-card">
                 <div
                     style="width: 80px; height: 80px; background: #fffbeb; border-radius: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
@@ -105,8 +105,8 @@
                 </div>
             </div>
 
-            <div class="glass" style="padding: 2.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div class="glass" style="padding: 2.5rem; overflow-x: auto;">
+                <div class="responsive-flex" style="margin-bottom: 2rem;">
                     <h2 style="margin: 0; font-size: 1.5rem;">February 2026</h2>
                     <div style="display: flex; gap: 0.5rem;">
                         <button class="btn" style="padding: 0.5rem; border-radius: 8px; background: #f1f5f9;"><i

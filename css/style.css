@@ -93,15 +93,66 @@ body {
     padding: 2rem 1.5rem;
     display: flex;
     flex-direction: column;
-    z-index: 100;
+    z-index: 1000;
     background: white;
     border-right: 1px solid var(--glass-border);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.collapsed {
+    left: -280px;
 }
 
 .main-content {
     margin-left: 280px;
     padding: 2.5rem;
     width: calc(100% - 280px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-content.full-width {
+    margin-left: 0;
+    width: 100%;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.show {
+    display: block;
+    opacity: 1;
+}
+
+/* Mobile Toggle */
+.mobile-toggle {
+    display: none;
+    width: 45px;
+    height: 45px;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    cursor: pointer;
+    color: var(--text-main);
+    font-size: 1.25rem;
+    position: sticky;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
 }
 
 .stats-grid {
@@ -232,6 +283,31 @@ h3 {
     box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 
+/* Responsive Utilities */
+.responsive-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.responsive-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .responsive-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .responsive-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
 /* Animations */
 @keyframes fadeIn {
     from {
@@ -247,4 +323,76 @@ h3 {
 
 .animate-in {
     animation: fadeIn 0.5s ease out forwards;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+    .sidebar {
+        left: -280px;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 1.5rem;
+    }
+
+    .mobile-toggle {
+        display: flex;
+        margin-bottom: 2rem;
+    }
+
+    header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+
+    header div[style*="text-align: right"] {
+        text-align: left !important;
+    }
+
+    .hide-desktop {
+        display: block !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    /* Fixed grid layouts on dashboard */
+    .main-content>div[style*="display: grid"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    .modal-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .btn {
+        padding: 0.7rem 1.25rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Utility to hide on mobile/desktop */
+@media (max-width: 1024px) {
+    .hide-mobile {
+        display: none !important;
+    }
 }
