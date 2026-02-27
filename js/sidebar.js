@@ -10,13 +10,23 @@ export function initSidebar() {
     // Attach logout to window so inline onclick works
     window.logout = logout;
 
+    // Remove existing sidebar if any
+    const existingSidebar = document.querySelector('.sidebar');
+    if (existingSidebar) existingSidebar.remove();
+
     const sidebarHTML = `
-        <div class="sidebar">
-            <div class="logo" style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 3rem;">
-                <div style="width: 35px; height: 35px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
-                    <i class="fas fa-leaf" style="font-size: 1.1rem;"></i>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <div class="sidebar" id="mainSidebar">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 3rem;">
+                <div class="logo" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 35px; height: 35px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="fas fa-leaf" style="font-size: 1.1rem;"></i>
+                    </div>
+                    <span style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">TEAMSYNC</span>
                 </div>
-                <span style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">TEAMSYNC</span>
+                <button class="hide-desktop" id="closeSidebar" style="background: none; border: none; font-size: 1.5rem; color: var(--text-dim); display: none;">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             
             <nav style="flex: 1;">
@@ -57,9 +67,34 @@ export function initSidebar() {
                 </button>
             </div>
         </div>
+        <button class="mobile-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
     `;
 
     document.body.insertAdjacentHTML('afterbegin', sidebarHTML);
+
+    // Toggle Logic
+    const sidebar = document.getElementById('mainSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggle = document.getElementById('menuToggle');
+    const closeBtn = document.getElementById('closeSidebar');
+
+    function toggleMenu() {
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('show');
+    }
+
+    if (toggle) toggle.addEventListener('click', toggleMenu);
+    if (overlay) overlay.addEventListener('click', toggleMenu);
+    if (closeBtn) closeBtn.addEventListener('click', toggleMenu);
+
+    // Hide close button on desktop via class or logic
+    if (window.innerWidth > 1024) {
+        if (closeBtn) closeBtn.style.display = 'none';
+    } else {
+        if (closeBtn) closeBtn.style.display = 'block';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', initSidebar);
