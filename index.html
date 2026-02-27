@@ -149,18 +149,43 @@
             try {
                 const users = await getAllUsers();
 
-                // If database is empty, let's create the default admin
+                // If database is empty, let's create the default users
                 if (users.length === 0) {
-                    console.log("Seeding initial admin user...");
-                    await createUser({
-                        id: 'TM-001',
-                        name: 'Admin User',
-                        role: 'admin',
-                        email: 'admin@team.com',
-                        streak: 0,
-                        longestStreak: 0,
-                        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
-                    });
+                    console.log("Seeding initial users...");
+                    const initialUsers = [
+                        {
+                            id: 'TM-001',
+                            name: 'Admin User',
+                            role: 'admin',
+                            email: 'admin@team.com',
+                            streak: 0,
+                            longestStreak: 0,
+                            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
+                        },
+                        {
+                            id: 'TM-002',
+                            name: 'Karth fire',
+                            role: 'member',
+                            email: 'karthfire@gmail.com',
+                            streak: 0,
+                            longestStreak: 0,
+                            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=KarthFire'
+                        },
+                        {
+                            id: 'TM-003',
+                            name: 'Karthick',
+                            role: 'member',
+                            email: 'karthick123@gmail.com',
+                            streak: 0,
+                            longestStreak: 0,
+                            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Karthick'
+                        }
+                    ];
+
+                    for (const u of initialUsers) {
+                        await createUser(u);
+                    }
+
                     // Refresh users after seeding
                     const freshUsers = await getAllUsers();
                     users.push(...freshUsers);
