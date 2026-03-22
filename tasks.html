@@ -75,7 +75,7 @@
                 <h1>Project Tasks</h1>
                 <p class="text-dim" id="taskSubtext">Manage and track work progress.</p>
             </div>
-            <button class="btn btn-primary" id="addTaskBtn" onclick="openModal('taskModal')">
+            <button class="btn btn-primary" id="addTaskBtn" onclick="openModal('taskModal')" style="display: none;">
                 <i class="fas fa-plus"></i> Create Task
             </button>
         </header>
@@ -182,8 +182,9 @@
 
                 if (currentUser.role === 'member') {
                     tasks = tasks.filter(t => t.assignedTo === currentUser.id);
-                    document.getElementById('addTaskBtn').style.display = 'none';
                     document.getElementById('taskSubtext').innerText = 'Your assigned tasks and their progress.';
+                } else {
+                    document.getElementById('addTaskBtn').style.display = 'flex';
                 }
 
                 if (tasks.length === 0) {
@@ -223,7 +224,7 @@
                             ` : ''}
                         </div>
 
-                        <div style="background: #f8fafc; border-radius: 1.25rem; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0;">
+                        <div class="responsive-flex" style="background: #f8fafc; border-radius: 1.25rem; padding: 1.5rem; border: 1px solid #e2e8f0;">
                             <div>
                                 ${t.submission ? `
                                     <div style="display: flex; flex-direction: column; gap: 0.25rem;">
@@ -235,7 +236,7 @@
                                 ` : '<span class="text-dim" style="font-weight: 600; font-size: 0.9rem;"><i class="fas fa-info-circle"></i> Waiting for submission</span>'}
                             </div>
                             
-                            <div style="display: flex; gap: 1rem;">
+                            <div class="task-actions-row" style="display: flex; gap: 1rem;">
                                 ${currentUser.role === 'member' && t.status !== 'Approved' ? `
                                     <button class="btn btn-primary" style="padding: 0.8rem 1.5rem;" onclick="window.openProofModal('${t.id}')">
                                         ${t.status === 'Action Required' ? 'Re-upload Artifact' : 'Submit Artifact'}
