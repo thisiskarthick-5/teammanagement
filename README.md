@@ -1,4 +1,4 @@
-# TEAMSYNC - Collaborative Team Management
+# TEAMLINK - Collaborative Team Management
 
 **TEAMSYNC** is a modern, high-performance team management and collaboration platform built with a focus on **Visual Excellence** and **Role-Based Security**. It features a trendy glassmorphism navigation system and fully responsive layouts for a seamless experience on any device.
 
