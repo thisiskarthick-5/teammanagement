@@ -10,91 +10,89 @@ export function initSidebar() {
     // Attach logout to window so inline onclick works
     window.logout = logout;
 
-    // Remove existing sidebar if any
+    // Remove existing navigation elements if any
     const existingSidebar = document.querySelector('.sidebar');
+    const existingFloating = document.querySelector('.floating-sidebar');
+    const existingBottom = document.querySelector('.mobile-bottom-bar');
     if (existingSidebar) existingSidebar.remove();
+    if (existingFloating) existingFloating.remove();
+    if (existingBottom) existingBottom.remove();
 
-    const sidebarHTML = `
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
-        <div class="sidebar" id="mainSidebar">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 3rem;">
-                <div class="logo" style="display: flex; align-items: center; gap: 0.75rem;">
-                    <div style="width: 35px; height: 35px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
-                        <i class="fas fa-leaf" style="font-size: 1.1rem;"></i>
-                    </div>
-                    <span style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">TEAMSYNC</span>
+    const path = window.location.pathname;
+
+    // --- Desktop Floating Sidebar ---
+    const desktopNavHTML = `
+        <div class="floating-sidebar hide-mobile">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 3rem; padding: 0 0.5rem;">
+                <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                    <i class="fas fa-leaf" style="font-size: 1rem;"></i>
                 </div>
-                <button class="hide-desktop" id="closeSidebar" style="background: none; border: none; font-size: 1.5rem; color: var(--text-dim); display: none;">
-                    <i class="fas fa-times"></i>
-                </button>
+                <span style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">TEAMSYNC</span>
             </div>
             
-            <nav style="flex: 1;">
-                <a href="dashboard.html" class="nav-link ${window.location.pathname.includes('dashboard') ? 'active' : ''}">
+            <nav style="flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
+                <a href="dashboard.html" class="nav-link ${path.includes('dashboard') ? 'active' : ''}">
                     <i class="fas fa-th-large"></i> Dashboard
                 </a>
-                <a href="tasks.html" class="nav-link ${window.location.pathname.includes('tasks') ? 'active' : ''}">
+                <a href="tasks.html" class="nav-link ${path.includes('tasks') ? 'active' : ''}">
                     <i class="fas fa-tasks"></i> Tasks
                 </a>
-                <a href="attendance.html" class="nav-link ${window.location.pathname.includes('attendance') ? 'active' : ''}">
+                <a href="attendance.html" class="nav-link ${path.includes('attendance') ? 'active' : ''}">
                     <i class="fas fa-calendar-check"></i> Attendance
                 </a>
                 ${user.role === 'member' ? `
-                <a href="notifications.html" class="nav-link ${window.location.pathname.includes('notifications') ? 'active' : ''}">
+                <a href="notifications.html" class="nav-link ${path.includes('notifications') ? 'active' : ''}">
                     <i class="fas fa-bell"></i> Notifications
                 </a>
                 ` : ''}
                 ${user.role === 'admin' ? `
-                <a href="members.html" class="nav-link ${window.location.pathname.includes('members') ? 'active' : ''}">
+                <a href="members.html" class="nav-link ${path.includes('members') ? 'active' : ''}">
                     <i class="fas fa-users"></i> Team Members
                 </a>
                 ` : ''}
-                <a href="profile.html?id=${user.id}" class="nav-link ${window.location.pathname.includes('profile') ? 'active' : ''}">
+                <a href="profile.html?id=${user.id}" class="nav-link ${path.includes('profile') ? 'active' : ''}">
                     <i class="fas fa-user-circle"></i> Portfolio
                 </a>
             </nav>
 
-            <div class="user-profile" style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--glass-border);">
-                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
-                    <img src="${user.avatar}" style="width: 44px; height: 44px; border-radius: 50%; border: 2px solid white; box-shadow: var(--shadow-sm);">
+            <div style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.05);">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding: 0 0.5rem;">
+                    <img src="${user.avatar}" style="width: 38px; height: 38px; border-radius: 12px; box-shadow: var(--shadow-sm);">
                     <div style="overflow: hidden;">
-                        <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">${user.role}</div>
+                        <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name.split(' ')[0]}</div>
+                        <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">${user.role}</div>
                     </div>
                 </div>
-                <button onclick="logout()" class="btn" style="width: 100%; font-size: 0.85rem; padding: 0.65rem; background: #fef2f2; color: #ef4444; border-radius: 12px; font-weight: 700;">
+                <button onclick="logout()" class="btn" style="width: 100%; font-size: 0.8rem; padding: 0.6rem; background: #fee2e2; color: #ef4444; border-radius: 12px; font-weight: 800;">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </div>
         </div>
-        <button class="mobile-toggle" id="menuToggle">
-            <i class="fas fa-bars"></i>
-        </button>
     `;
 
-    document.body.insertAdjacentHTML('afterbegin', sidebarHTML);
+    // --- Mobile Floating Bottom Bar ---
+    const mobileBottomHTML = `
+        <div class="mobile-bottom-bar">
+            <a href="dashboard.html" class="bottom-nav-link ${path.includes('dashboard') ? 'active' : ''}">
+                <i class="fas fa-layer-group"></i>
+                <span>Home</span>
+            </a>
+            <a href="tasks.html" class="bottom-nav-link ${path.includes('tasks') ? 'active' : ''}">
+                <i class="fas fa-list-check"></i>
+                <span>Tasks</span>
+            </a>
+            <a href="attendance.html" class="bottom-nav-link ${path.includes('attendance') ? 'active' : ''}">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Presence</span>
+            </a>
+            <a href="profile.html?id=${user.id}" class="bottom-nav-link ${path.includes('profile') ? 'active' : ''}">
+                <i class="fas fa-circle-user"></i>
+                <span>Profile</span>
+            </a>
+        </div>
+    `;
 
-    // Toggle Logic
-    const sidebar = document.getElementById('mainSidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const toggle = document.getElementById('menuToggle');
-    const closeBtn = document.getElementById('closeSidebar');
-
-    function toggleMenu() {
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('show');
-    }
-
-    if (toggle) toggle.addEventListener('click', toggleMenu);
-    if (overlay) overlay.addEventListener('click', toggleMenu);
-    if (closeBtn) closeBtn.addEventListener('click', toggleMenu);
-
-    // Hide close button on desktop via class or logic
-    if (window.innerWidth > 1024) {
-        if (closeBtn) closeBtn.style.display = 'none';
-    } else {
-        if (closeBtn) closeBtn.style.display = 'block';
-    }
+    document.body.insertAdjacentHTML('afterbegin', desktopNavHTML + mobileBottomHTML);
 }
 
 document.addEventListener('DOMContentLoaded', initSidebar);
