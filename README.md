@@ -1,79 +1,60 @@
-# 🌿 TEAMSYNC - Collaborative Team Management
-
-![TEAMSYNC Banner](file:///C:/Users/karthick/.gemini/antigravity/brain/b069fbba-b39a-47d4-bf39-722e3a1cfdcd/teamsync_banner_hero_1774181463311.png)
+# TEAMSYNC - Collaborative Team Management
 
 **TEAMSYNC** is a modern, high-performance team management and collaboration platform built with a focus on **Visual Excellence** and **Role-Based Security**. It features a trendy glassmorphism navigation system and fully responsive layouts for a seamless experience on any device.
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-- 🌌 **Trendy Glassmorphism UI**: A state-of-the-art design with floating navigation, blur effects, and smooth transitions.
-- 🛡️ **Role-Based Access (Admin vs. Member)**: 
-  - **Admins**: Create tasks, manage team members, and oversee analytics.
-  - **Members**: Manage task status, track attendance, and build their expertise profile.
-- 📅 **Productivity Tracking**: Daily attendance marking with streak counters and achievement milestones.
-- 📋 **Task Lifecycle Management**: From task creation to final approval and verification.
-- 👤 **Dynamic Portfolios**: Showcase digital footprints, skills, and approved contributions.
-- 📱 **Mobile-First Experience**: Floating bottom-tab bar for easy thumb navigation on smaller screens.
-
----
-
-## 📸 Screenshots
-
-### 💻 Desktop Experience
-The desktop view features a sleek **Floating Sidebar** with glassmorphism effects.
-
-![Desktop Dashboard](file:///C:/Users/karthick/.gemini/antigravity/brain/b069fbba-b39a-47d4-bf39-722e3a1cfdcd/dashboard_1440x900_sidebar_1774181195431.png)
-
-### 🤳 Mobile Experience
-Optimized for one-handed use with a **Floating Bottom-Tab Bar**.
-
-![Mobile Dashboard](file:///C:/Users/karthick/.gemini/antigravity/brain/b069fbba-b39a-47d4-bf39-722e3a1cfdcd/dashboard_375x812_bottom_bar_1774181212452.png)
+- **Trendy Navigation**: A state-of-the-art design with floating glassmorphism sidebar (Desktop) and floating bottom-tab bar (Mobile).
+- **Role-Based Access Control**: 
+  - **Administrator**: Full control over task creation, member provisioning, and team-wide analytics.
+  - **Team Member**: Individual task management, attendance tracking, and portfolio building.
+- **Productivity & Attendance**: Daily check-ins with streak tracking and engagement statistics.
+- **Task Lifecycle**: End-to-end management from assignment to final verification and artifact linking.
+- **Professional Portfolios**: Dynamic user profiles highlighting expertise, social presence, and verified contributions.
+- **Cross-Device Optimization**: Optimized spacing and UX for Desktop, Tablet, and Mobile viewports.
 
 ---
 
-## 🛠️ Technology Stack
+## Technical Architecture
 
-- **Frontend**: Vanilla HTML5, Vanilla CSS3 (Custom Design System), JavaScript (ES6+ Modules)
-- **Backend/Database**: [Firebase](https://firebase.google.com/) (Firestore, Authentication, Storage)
-- **Design Inspiration**: Glassmorphism, Modern Minimalist, Accessibility-Focused
+- **Core**: HTML5 Semantic Structure, CSS3 Custom Modern Styling.
+- **Logic**: JavaScript (ES6+ Module-based architecture).
+- **Backend/Platform**: [Firebase](https://firebase.google.com/) (Real-time Firestore, Authentication, Cloud Storage).
+- **Icons**: FontAwesome 6 Core Library.
+- **Design Tokens**: Custom-built Glassmorphism and Emerald-Green Design System.
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - A modern web browser.
-- A local server (e.g., `http-server` or VS Code Live Server).
+- A local HTTP server (e.g., `http-server` or `live-server`).
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone [repository-url]
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd teammanagement
-   ```
-3. Run a local server:
-   ```bash
-   npx http-server ./teammanagement
-   ```
-4. Open the application in your browser:
-   ```
-   http://localhost:8080
-   ```
+### Installation & Setup
+1. Clone the project repository.
+2. Navigate to the project root directory: `cd teammanagement`.
+3. Start your local server: `npx http-server .`.
+4. Access the application at: `http://localhost:8080`.
 
 ---
 
-## 🛡️ Role-Based Credentials (Local Test Data)
+## Access Credentials (Local Test Data)
 
-| Role | Email | Status |
+The following accounts are pre-configured for platform demonstration:
+
+| User Role | Email | Capabilities |
 | :--- | :--- | :--- |
-| **Admin** | `admin@team.com` | Full Control |
-| **Member** | `karthick123@gmail.com` | Standard Access |
+| **Administrator** | `admin@team.com` | Task Creation, Member Management, Global Analytics |
+| **Team Member** | `karthick123@gmail.com` | Task Status, Attendance, Personal Portfolio |
 
 ---
 
-Developed with ❤️ by the **TEAMSYNC** team.
+## Performance & Optimization
+- **Zero-Dependency Core**: Lightweight frontend logic for instant page loads.
+- **Lazy Rendering**: Dynamic UI generation for large datasets (Tasks/Members).
+- **Mobile-First Navigation**: Floating bars for ergonomic interaction on handheld devices.
+
+*TEAMSYNC — Efficiency through visual clarity.*
