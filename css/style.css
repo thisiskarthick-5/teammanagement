@@ -1,26 +1,27 @@
 :root {
     --primary: #059669;
-    /* Emerald 600 */
     --primary-hover: #047857;
     --primary-light: #34d399;
     --secondary: #10b981;
     --accent: #bef264;
-    /* Lime 300 - for the 'Shop Now' style buttons */
     --accent-dark: #84cc16;
     --bg-main: #f8fafc;
-    /* Slate 50 */
     --bg-card: #ffffff;
     --text-main: #0f172a;
-    /* Slate 900 */
     --text-dim: #64748b;
-    /* Slate 500 */
     --glass-border: #e2e8f0;
-    /* Slate 200 */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     --radius-lg: 1.5rem;
     --radius-md: 1rem;
+    --sidebar-w: 280px;
+    
+    /* Glassmorphism Tokens */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-bg-hover: rgba(255, 255, 255, 0.9);
+    --glass-blur: 12px;
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
 * {
@@ -38,7 +39,7 @@ body {
     line-height: 1.5;
 }
 
-/* Card - Replacing Glass with Clean White */
+/* ===================== Cards ===================== */
 .glass {
     background: var(--bg-card);
     border: 1px solid var(--glass-border);
@@ -51,26 +52,25 @@ body {
     box-shadow: var(--shadow-md);
 }
 
+/* ===================== Buttons ===================== */
 .btn {
     padding: 0.8rem 1.75rem;
     border-radius: 100px;
-    /* Fully rounded like the reference */
     border: none;
     cursor: pointer;
     font-weight: 700;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     font-size: 0.95rem;
+    white-space: nowrap;
 }
 
 .btn-primary {
     background: var(--accent);
-    /* Light Lime from the reference */
     color: #064e3b;
-    /* Dark Green text for contrast */
 }
 
 .btn-primary:hover {
@@ -84,45 +84,95 @@ body {
     color: white;
 }
 
-.sidebar {
-    width: 280px;
-    height: 100vh;
+/* ============ Trendy Navigation (Floating) ============ */
+
+/* Desktop Floating Sidebar */
+.floating-sidebar {
     position: fixed;
-    left: 0;
-    top: 0;
-    padding: 2rem 1.5rem;
+    top: 1.5rem;
+    left: 1.5rem;
+    bottom: 1.5rem;
+    width: 260px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 2rem;
+    box-shadow: var(--glass-shadow);
+    z-index: 1000;
+    padding: 2rem 1.25rem;
     display: flex;
     flex-direction: column;
-    z-index: 1000;
-    background: white;
-    border-right: 1px solid var(--glass-border);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.sidebar.collapsed {
-    left: -280px;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .main-content {
-    margin-left: 280px;
+    margin-left: 300px; /* sidebar-w + margins */
     padding: 2.5rem;
-    width: calc(100% - 280px);
+    width: calc(100% - 300px);
+    min-height: 100vh;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.main-content.full-width {
-    margin-left: 0;
-    width: 100%;
+/* Mobile Bottom Bar (Floating) */
+.mobile-bottom-bar {
+    display: none;
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1rem;
+    right: 1rem;
+    height: 70px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 20px;
+    box-shadow: var(--glass-shadow);
+    z-index: 1000;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 1rem;
 }
+
+.bottom-nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 700;
+    transition: all 0.2s;
+    flex: 1;
+}
+
+.bottom-nav-link i {
+    font-size: 1.2rem;
+}
+
+.bottom-nav-link.active {
+    color: var(--primary);
+}
+
+.bottom-nav-link.active::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: var(--primary);
+    border-radius: 50%;
+    margin-top: 2px;
+}
+
+/* Hide legacy sidebar */
+.sidebar { display: none; }
 
 /* Sidebar Overlay */
 .sidebar-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(15, 23, 42, 0.4);
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.45);
     backdrop-filter: blur(4px);
     z-index: 999;
     display: none;
@@ -135,7 +185,7 @@ body {
     opacity: 1;
 }
 
-/* Mobile Toggle */
+/* Mobile Hamburger Toggle */
 .mobile-toggle {
     display: none;
     width: 45px;
@@ -149,15 +199,17 @@ body {
     color: var(--text-main);
     font-size: 1.25rem;
     position: sticky;
-    top: 1.5rem;
-    left: 1.5rem;
+    top: 1rem;
+    left: 0;
     z-index: 100;
     box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
 }
 
+/* ===================== Stats Grid ===================== */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2.5rem;
 }
@@ -169,36 +221,16 @@ body {
     gap: 0.5rem;
 }
 
-h1 {
-    font-size: 2.25rem;
-    font-weight: 800;
-    letter-spacing: -0.025em;
-    margin-bottom: 0.5rem;
-}
+/* ===================== Typography ===================== */
+h1 { font-size: 2.25rem; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.5rem; }
+h2 { font-size: 1.5rem; font-weight: 700; }
+h3 { font-size: 1.25rem; font-weight: 700; }
 
-h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-}
+.text-dim    { color: var(--text-dim); }
+.text-primary { color: var(--primary); }
+.text-accent  { color: var(--accent-dark); }
 
-h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-}
-
-.text-dim {
-    color: var(--text-dim);
-}
-
-.text-primary {
-    color: var(--primary);
-}
-
-.text-accent {
-    color: var(--accent-dark);
-}
-
-/* Navigation */
+/* ===================== Navigation ===================== */
 .nav-link {
     display: flex;
     align-items: center;
@@ -212,45 +244,36 @@ h3 {
     transition: all 0.2s;
 }
 
-.nav-link:hover {
-    background: var(--bg-main);
-    color: var(--primary);
-}
+.nav-link:hover   { background: var(--bg-main); color: var(--primary); }
+.nav-link.active  { background: #ecfdf5; color: var(--primary); }
 
-.nav-link.active {
-    background: #ecfdf5;
-    /* Emerald 50 */
-    color: var(--primary);
-}
-
-/* Modal Styles - Cleaner & Brighter */
+/* ===================== Modal ===================== */
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(15, 23, 42, 0.4);
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.45);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
-    padding: 1.5rem;
+    z-index: 2000;
+    padding: 1rem;
+    overflow-y: auto;
 }
 
 .modal-content {
     background: white;
     padding: 2.5rem;
     border-radius: var(--radius-lg);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-    max-width: 500px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+    max-width: 540px;
     width: 100%;
+    position: relative;
 }
 
-.form-group {
-    margin-bottom: 1.25rem;
-}
+/* ===================== Forms ===================== */
+.form-group { margin-bottom: 1.25rem; }
 
 .form-group label {
     display: block;
@@ -266,8 +289,7 @@ h3 {
     width: 100%;
     padding: 0.85rem 1.1rem;
     background: #f1f5f9;
-    /* Slate 100 */
-    border: 1px solid transparent;
+    border: 1.5px solid transparent;
     border-radius: var(--radius-md);
     color: var(--text-main);
     outline: none;
@@ -283,12 +305,13 @@ h3 {
     box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 
-/* Responsive Utilities */
+/* ===================== Layout Helpers ===================== */
 .responsive-flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1.5rem;
+    flex-wrap: wrap;
 }
 
 .responsive-grid {
@@ -296,103 +319,129 @@ h3 {
     gap: 1.5rem;
 }
 
-@media (max-width: 768px) {
-    .responsive-flex {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-
-    .responsive-grid {
-        grid-template-columns: 1fr !important;
-    }
-}
-
-/* Animations */
+/* ===================== Animations ===================== */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
+.animate-in { animation: fadeIn 0.45s ease forwards; }
 
-.animate-in {
-    animation: fadeIn 0.5s ease out forwards;
-}
+/* ===================== Utility ===================== */
+.hide-desktop { display: none; }
 
-/* Responsive Breakpoints */
+/* ===================== BREAKPOINTS ===================== */
+
+/* --- Tablet / Small Desktop (≤ 1024px) --- */
 @media (max-width: 1024px) {
-    .sidebar {
-        left: -280px;
+    .floating-sidebar {
+        display: none;
     }
 
-    .sidebar.active {
-        left: 0;
+    .mobile-bottom-bar {
+        display: flex;
     }
 
     .main-content {
         margin-left: 0 !important;
         width: 100% !important;
-        padding: 1.5rem;
+        padding: 1.5rem 1.25rem 6.5rem; /* bottom padding for bar */
     }
 
     .mobile-toggle {
-        display: flex;
-        margin-bottom: 2rem;
-    }
-
-    header {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 1rem;
-    }
-
-    header div[style*="text-align: right"] {
-        text-align: left !important;
+        display: none !important; /* Hamburger no longer needed with bottom bar */
     }
 
     .hide-desktop {
         display: block !important;
     }
+
+    .hide-mobile {
+        display: none !important;
+    }
 }
 
+/* --- Mobile (≤ 768px) --- */
 @media (max-width: 768px) {
+    h1 { font-size: 1.65rem; }
+    h2 { font-size: 1.2rem; }
+    h3 { font-size: 1.05rem; }
+
+    .main-content {
+        padding: 1rem;
+    }
+
+    .mobile-toggle {
+        margin-bottom: 1rem;
+    }
+
+    /* Collapse any explicit grid to single column */
+    .responsive-grid,
+    [style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Stack responsive flex */
+    .responsive-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    /* Make header action buttons full-width on mobile */
+    .responsive-flex > .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Stats stack single column */
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .stat-card { padding: 1.25rem; }
+
+    /* Modal: full-width, comfortable padding */
+    .modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .modal-content {
+        max-width: 100%;
+        width: 100%;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        padding: 1.75rem 1.25rem;
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+
+    /* Buttons stay comfortable */
+    .btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.88rem;
+    }
+
+    /* Task card action buttons wrap */
+    .task-actions-row {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .task-actions-row > .btn {
+        flex: 1;
+        min-width: 120px;
+    }
+}
+
+/* --- Very Small (≤ 480px) --- */
+@media (max-width: 480px) {
+    h1 { font-size: 1.4rem; }
+    
     .stats-grid {
         grid-template-columns: 1fr;
     }
 
-    h1 {
-        font-size: 1.75rem;
-    }
-
-    h2 {
-        font-size: 1.25rem;
-    }
-
-    /* Fixed grid layouts on dashboard */
-    .main-content>div[style*="display: grid"] {
-        grid-template-columns: 1fr !important;
-    }
-
     .modal-content {
-        padding: 1.5rem;
-        margin: 1rem;
-    }
-
-    .btn {
-        padding: 0.7rem 1.25rem;
-        font-size: 0.9rem;
-    }
-}
-
-/* Utility to hide on mobile/desktop */
-@media (max-width: 1024px) {
-    .hide-mobile {
-        display: none !important;
+        padding: 1.25rem 1rem;
     }
 }
