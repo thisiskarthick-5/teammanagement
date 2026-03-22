@@ -13,18 +13,19 @@
             margin-bottom: 1.25rem;
             display: flex;
             gap: 1.5rem;
-            align-items: center;
+            align-items: flex-start;
             transition: all 0.2s;
             cursor: pointer;
+            border-radius: var(--radius-lg);
         }
 
         .notification-card:hover {
-            transform: translateX(8px);
+            transform: translateX(6px);
             box-shadow: var(--shadow-md);
         }
 
         .notification-card.unread {
-            border-left: 6px solid var(--primary);
+            border-left: 5px solid var(--primary);
             background: #f0fdf4;
         }
 
@@ -57,7 +58,31 @@
             color: #475569;
             border: 1px solid #e2e8f0;
         }
-    </style>
+
+        .notif-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 0.2rem 0.6rem;
+            border-radius: 100px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .badge-approved {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .badge-rejected {
+            background: #fff1f2;
+            color: #e11d48;
+        }
+
+        .badge-info {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
     </style>
 </head>
 
@@ -66,7 +91,7 @@
         <header class="responsive-flex" style="margin-bottom: 2.5rem;">
             <div>
                 <h1>Notifications</h1>
-                <p class="text-dim">Updates on your tasks and messages from admin.</p>
+                <p class="text-dim">Task updates and messages from the team admin.</p>
             </div>
             <button class="btn glass" onclick="window.markAllRead()">
                 <i class="fas fa-check-double"></i> Mark all as read
@@ -98,7 +123,8 @@
                     list.innerHTML = `
                         <div class="glass" style="padding: 4rem; text-align: center; color: var(--text-dim);">
                             <i class="fas fa-bell-slash" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.2;"></i>
-                            <p>You have no notifications yet.</p>
+                            <p style="font-weight: 600;">You have no notifications yet.</p>
+                            <p style="font-size: 0.9rem; margin-top: 0.25rem;">When tasks are approved or flagged, you'll see updates here.</p>
                         </div>
                     `;
                     return;
@@ -107,35 +133,49 @@
                 list.innerHTML = notifications.map(n => {
                     let iconClass = 'icon-task';
                     let icon = 'fa-bell';
+                    let badgeClass = 'badge-info';
+                    let badgeLabel = 'Update';
 
                     if (n.type === 'approval') {
                         iconClass = 'icon-approval';
                         icon = 'fa-check-circle';
+                        badgeClass = 'badge-approved';
+                        badgeLabel = '✓ Approved';
                     } else if (n.type === 'query') {
                         iconClass = 'icon-query';
-                        icon = 'fa-question-circle';
+                        icon = 'fa-exclamation-circle';
+                        badgeClass = 'badge-rejected';
+                        badgeLabel = '! Action Needed';
                     }
 
                     const date = new Date(n.createdAt);
-                    const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const timeStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        + ' · ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    // Title: show task name if available
+                    const headingLabel = n.taskTitle
+                        ? `<strong>${n.taskTitle}</strong>`
+                        : (n.type === 'approval' ? 'Milestone Approved' : 'Action Required');
 
                     return `
-                        <div class="glass notification-card ${n.read ? '' : 'unread'} animate-in" onclick="window.handleRead('${n.id}', '${n.taskId}')">
+                        <div class="glass notification-card ${n.read ? '' : 'unread'} animate-in" onclick="window.handleRead('${n.id}', '${n.taskId || ''}')">
                             <div class="icon-box ${iconClass}">
                                 <i class="fas ${icon}"></i>
                             </div>
-                            <div style="flex: 1;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                    <span style="font-weight: 800; font-size: 1.1rem; color: var(--text-main);">
-                                        ${n.type === 'approval' ? 'Milestone Approved' : 'Action Required'}
-                                    </span>
-                                    <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase;">${timeStr}</span>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.4rem; flex-wrap: wrap;">
+                                    <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                                        <span style="font-weight: 800; font-size: 1rem; color: var(--text-main);">${headingLabel}</span>
+                                        <span class="notif-badge ${badgeClass}">${badgeLabel}</span>
+                                        ${!n.read ? `<span style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary); display: inline-block; flex-shrink: 0;"></span>` : ''}
+                                    </div>
+                                    <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 600; white-space: nowrap; flex-shrink: 0;">${timeStr}</span>
                                 </div>
-                                <p style="font-size: 0.95rem; color: #475569; line-height: 1.5; margin: 0;">${n.message}</p>
+                                <p style="font-size: 0.93rem; color: #475569; line-height: 1.55; margin: 0;">${n.message}</p>
                                 ${n.taskId ? `
-                                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #f1f5f9;">
-                                        <span style="color: var(--primary); font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                                            Inspect Task Lifecycle <i class="fas fa-arrow-right" style="font-size: 0.7rem;"></i>
+                                    <div style="margin-top: 0.85rem;">
+                                        <span style="color: var(--primary); font-weight: 800; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+                                            <i class="fas fa-arrow-right" style="font-size: 0.7rem;"></i> View task details
                                         </span>
                                     </div>
                                 ` : ''}

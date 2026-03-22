@@ -94,6 +94,9 @@ export async function submitTaskProof(taskId, submissionData) {
 
 export async function approveTask(taskId, userId) {
     const taskRef = doc(db, COLLECTIONS.TASKS, taskId);
+    const taskSnap = await getDoc(taskRef);
+    const taskTitle = taskSnap.exists() ? taskSnap.data().title : 'Task';
+
     await updateDoc(taskRef, {
         status: 'Approved',
         'submission.status': 'Approved'
@@ -103,8 +106,9 @@ export async function approveTask(taskId, userId) {
     await createNotification({
         userId,
         type: 'approval',
-        message: 'Your work has been approved! Streak updated.',
+        message: `Your work on '${taskTitle}' has been approved! Streak updated.`,
         taskId,
+        taskTitle,
         createdAt: new Date().toISOString(),
         read: false
     });
@@ -124,6 +128,9 @@ export async function approveTask(taskId, userId) {
 
 export async function rejectTask(taskId, userId, message) {
     const taskRef = doc(db, COLLECTIONS.TASKS, taskId);
+    const taskSnap = await getDoc(taskRef);
+    const taskTitle = taskSnap.exists() ? taskSnap.data().title : 'Task';
+
     await updateDoc(taskRef, {
         status: 'Action Required',
         'submission.status': 'Rejected',
@@ -134,8 +141,9 @@ export async function rejectTask(taskId, userId, message) {
     await createNotification({
         userId,
         type: 'query',
-        message: `Changes requested: ${message}`,
+        message: `Changes requested for '${taskTitle}': ${message}`,
         taskId,
+        taskTitle,
         createdAt: new Date().toISOString(),
         read: false
     });

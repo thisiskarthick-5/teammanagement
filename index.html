@@ -110,30 +110,63 @@
         <h1>TEAMSYNC</h1>
         <p class="subtitle">Efficient Team Collaboration Platform</p>
 
-        <form id="loginForm">
-            <div class="form-group">
-                <label>Professional Email</label>
-                <input type="email" id="email" placeholder="name@company.com" required value="admin@team.com">
+        <div id="loginSection">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Professional Email</label>
+                    <input type="email" id="email" placeholder="name@company.com" required value="admin@team.com">
+                </div>
+
+                <div class="form-group">
+                    <label>System Role</label>
+                    <select id="role">
+                        <option value="admin">Administrator / Lead</option>
+                        <option value="member">Team Member</option>
+                    </select>
+                </div>
+
+                <div id="errorMsg" class="error-msg"
+                    style="text-align: center; margin-bottom: 1rem; color: #ef4444; font-weight: 600; display: none;"></div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Get Started <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
+                </button>
+            </form>
+
+            <div class="demo-badge">
+                <i class="fas fa-info-circle"></i> DEMO: Use <b>admin@team.com</b>
             </div>
+            
+            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
+                <a href="#" id="showRegister" style="color: var(--primary); font-weight: 600; text-decoration: none;">New member? Register here</a>
+            </p>
+        </div>
 
-            <div class="form-group">
-                <label>System Role</label>
-                <select id="role">
-                    <option value="admin">Administrator / Lead</option>
-                    <option value="member">Team Member</option>
-                </select>
-            </div>
-
-            <div id="errorMsg" class="error-msg"
-                style="text-align: center; margin-bottom: 1rem; color: #ef4444; font-weight: 600;"></div>
-
-            <button type="submit" class="btn btn-primary" style="width: 100%;">
-                Get Started <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
-            </button>
-        </form>
-
-        <div class="demo-badge">
-            <i class="fas fa-info-circle"></i> DEMO: Use <b>admin@team.com</b>
+        <div id="registerSection" style="display: none;">
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" placeholder="e.g. Jane Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Professional Email</label>
+                    <input type="email" id="regEmail" placeholder="name@company.com" required>
+                </div>
+                <div class="form-group">
+                    <label>System Role</label>
+                    <select id="regRole">
+                        <option value="member">Team Member</option>
+                        <option value="admin">Administrator / Lead</option>
+                    </select>
+                </div>
+                <div id="regErrorMsg" class="error-msg" style="text-align: center; margin-bottom: 1rem; color: #ef4444; font-weight: 600; display: none;"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Create Account <i class="fas fa-user-plus" style="margin-left: 0.5rem;"></i>
+                </button>
+            </form>
+            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
+                <a href="#" id="showLogin" style="color: var(--primary); font-weight: 600; text-decoration: none;">Already have an account? Sign In</a>
+            </p>
         </div>
     </div>
 
@@ -213,6 +246,62 @@
                 console.error(err);
                 errorMsg.style.display = 'block';
                 errorMsg.innerHTML = `<strong>Error:</strong> ${err.message || 'Unknown Firebase Error'}<br><small>Please check your Firestore rules.</small>`;
+            }
+        });
+
+        document.getElementById('showRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('registerSection').style.display = 'block';
+            document.getElementById('errorMsg').style.display = 'none';
+        });
+
+        document.getElementById('showLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('regErrorMsg').style.display = 'none';
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const role = document.getElementById('regRole').value;
+            const errorMsg = document.getElementById('regErrorMsg');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+
+            try {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                submitBtn.disabled = true;
+
+                const users = await getAllUsers();
+                if (users.find(u => u.email === email)) {
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = "Email is already registered. Please sign in.";
+                    submitBtn.innerHTML = 'Create Account <i class="fas fa-user-plus" style="margin-left: 0.5rem;"></i>';
+                    submitBtn.disabled = false;
+                    return;
+                }
+
+                const newUser = {
+                    name,
+                    email,
+                    role,
+                    streak: 0,
+                    longestStreak: 0,
+                    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`
+                };
+
+                const createdInfo = await createUser(newUser);
+                setCurrentUser(createdInfo);
+                window.location.href = 'dashboard.html';
+            } catch (err) {
+                console.error(err);
+                submitBtn.innerHTML = 'Create Account <i class="fas fa-user-plus" style="margin-left: 0.5rem;"></i>';
+                submitBtn.disabled = false;
+                errorMsg.style.display = 'block';
+                errorMsg.innerHTML = `<strong>Error:</strong> ${err.message || 'Unknown Firebase Error'}`;
             }
         });
 
