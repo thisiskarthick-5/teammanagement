@@ -76,4 +76,4 @@ The following accounts are pre-configured for platform demonstration:
 - **Lazy Rendering**: Dynamic UI generation for large datasets (Tasks/Members).
 - **Mobile-First Navigation**: Floating bars for ergonomic interaction on handheld devices.
 
-*TEAMSYNC — Efficiency through visual clarity.*
+*TEAMLINK — Efficiency through visual clarity.*
