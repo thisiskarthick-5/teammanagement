@@ -17,6 +17,25 @@
 
 ---
 
+## Samples
+
+### 1. Dashboard
+<img src = "image1.png">
+
+### 2. Activity
+<img src = "image2.png">
+
+### 3. Attendence
+<img src = "image3.png">
+
+### 4. Team members
+<img src = "image4.png">
+
+### 5. Profile
+<img src = "image5.png">
+
+
+
 ## Technical Architecture
 
 - **Core**: HTML5 Semantic Structure, CSS3 Custom Modern Styling.
