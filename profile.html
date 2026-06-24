@@ -300,6 +300,41 @@
                     <div class="responsive-grid" style="grid-template-columns: 1fr 1.8fr; gap: 2rem;">
                         <!-- Sidebar: Skills + Links -->
                         <div style="display: flex; flex-direction: column; gap: 2rem;">
+                            ${(isOwner || (currentUser && currentUser.role === 'admin')) ? `
+                            <div class="glass" style="padding: 2rem; border-color: var(--primary-light); background: #f0fdf4;">
+                                <h3 style="margin-bottom: 1rem; font-size: 1.25rem; color: #166534; display: flex; align-items: center; gap: 0.5rem; font-weight: 800;">
+                                    <i class="fas fa-key"></i> System Credentials
+                                </h3>
+                                <p style="font-size: 0.85rem; margin-bottom: 1.25rem; font-weight: 600; color: #166534; opacity: 0.85; line-height: 1.4;">
+                                    Keep these login credentials secure. Use them to sign in to TEAMSYNC.
+                                </p>
+                                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 0.75rem 1rem; border-radius: 10px; border: 1px solid #dcfce7;">
+                                        <div style="display: flex; flex-direction: column; gap: 0.15rem; text-align: left;">
+                                            <span style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; display: block;">Username</span>
+                                            <span style="font-weight: 700; color: var(--text-main); font-family: monospace; font-size: 0.95rem;">${user.username || 'N/A'}</span>
+                                        </div>
+                                        <button onclick="navigator.clipboard.writeText('${user.username}')" class="btn" style="padding: 0.4rem; background: #f1f5f9; border-radius: 6px; font-size: 0.8rem; min-width: 32px; height: 32px; border: none; cursor: pointer;" title="Copy Username">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 0.75rem 1rem; border-radius: 10px; border: 1px solid #dcfce7;">
+                                        <div style="display: flex; flex-direction: column; gap: 0.15rem; text-align: left;">
+                                            <span style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; display: block;">Password</span>
+                                            <span id="displayPassword" style="font-weight: 700; color: var(--text-main); font-family: monospace; font-size: 0.95rem;">••••••••</span>
+                                        </div>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <button id="togglePassBtn" onclick="window.togglePasswordVisibility('${user.password}')" class="btn" style="padding: 0.4rem; background: #f1f5f9; border-radius: 6px; font-size: 0.8rem; min-width: 32px; height: 32px; border: none; cursor: pointer;" title="Show Password">
+                                                <i class="far fa-eye"></i>
+                                            </button>
+                                            <button onclick="navigator.clipboard.writeText('${user.password}')" class="btn" style="padding: 0.4rem; background: #f1f5f9; border-radius: 6px; font-size: 0.8rem; min-width: 32px; height: 32px; border: none; cursor: pointer;" title="Copy Password">
+                                                <i class="far fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            ` : ''}
                             <div class="glass" style="padding: 2rem;">
                                 <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
                                     Expertise Profile
@@ -486,6 +521,19 @@
                     window.closeEditModal();
                     renderProfile();
                 });
+
+                // --- Password Visibility Toggle ---
+                window.togglePasswordVisibility = (passVal) => {
+                    const passEl = document.getElementById('displayPassword');
+                    const btnIcon = document.getElementById('togglePassBtn').querySelector('i');
+                    if (passEl.innerText === '••••••••') {
+                        passEl.innerText = passVal;
+                        btnIcon.className = 'far fa-eye-slash';
+                    } else {
+                        passEl.innerText = '••••••••';
+                        btnIcon.className = 'far fa-eye';
+                    }
+                };
 
             } catch (err) {
                 console.error("Error rendering profile:", err);

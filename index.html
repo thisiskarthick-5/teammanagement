@@ -129,16 +129,13 @@
         <div id="loginSection">
             <form id="loginForm">
                 <div class="form-group">
-                    <label>Professional Email</label>
-                    <input type="email" id="email" placeholder="name@company.com" required value="admin@team.com">
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" required value="admin">
                 </div>
 
                 <div class="form-group">
-                    <label>System Role</label>
-                    <select id="role">
-                        <option value="admin">Administrator / Lead</option>
-                        <option value="member">Team Member</option>
-                    </select>
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required value="admin123">
                 </div>
 
                 <div id="errorMsg" class="error-msg"
@@ -150,7 +147,7 @@
             </form>
 
             <div class="demo-badge">
-                <i class="fas fa-info-circle"></i> DEMO: Use <b>admin@team.com</b>
+                <i class="fas fa-info-circle"></i> DEMO: Username <b>admin</b> | Password <b>admin123</b>
             </div>
             
             <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
@@ -167,6 +164,14 @@
                 <div class="form-group">
                     <label>Professional Email</label>
                     <input type="email" id="regEmail" placeholder="name@company.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" placeholder="e.g. janedoe" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Create a password" required>
                 </div>
                 <div class="form-group">
                     <label>System Role</label>
@@ -191,8 +196,8 @@
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const role = document.getElementById('role').value;
+            const usernameInput = document.getElementById('username').value.trim().toLowerCase();
+            const passwordInput = document.getElementById('password').value;
             const errorMsg = document.getElementById('errorMsg');
 
             try {
@@ -207,6 +212,8 @@
                             name: 'Admin User',
                             role: 'admin',
                             email: 'admin@team.com',
+                            username: 'admin',
+                            password: 'admin123',
                             streak: 0,
                             longestStreak: 0,
                             avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
@@ -216,6 +223,8 @@
                             name: 'Karth fire',
                             role: 'member',
                             email: 'karthfire@gmail.com',
+                            username: 'karthfire',
+                            password: 'karth123',
                             streak: 0,
                             longestStreak: 0,
                             avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=KarthFire'
@@ -225,6 +234,8 @@
                             name: 'Karthick',
                             role: 'member',
                             email: 'karthick123@gmail.com',
+                            username: 'karthick',
+                            password: 'karthick123',
                             streak: 0,
                             longestStreak: 0,
                             avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Karthick'
@@ -234,6 +245,8 @@
                             name: 'Akash',
                             role: 'member',
                             email: 'akash@gmail.com',
+                            username: 'akash',
+                            password: 'akash123',
                             streak: 0,
                             longestStreak: 0,
                             avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Akash'
@@ -249,14 +262,14 @@
                     users.push(...freshUsers);
                 }
 
-                const user = users.find(u => u.email === email && u.role === role);
+                const user = users.find(u => u.username?.toLowerCase() === usernameInput && u.password === passwordInput);
 
                 if (user) {
                     setCurrentUser(user);
                     window.location.href = 'dashboard.html';
                 } else {
                     errorMsg.style.display = 'block';
-                    errorMsg.innerText = "User not found. Ensure you are using admin@team.com.";
+                    errorMsg.innerText = "Invalid username or password.";
                 }
             } catch (err) {
                 console.error(err);
@@ -283,6 +296,8 @@
             e.preventDefault();
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
+            const username = document.getElementById('regUsername').value.trim().toLowerCase();
+            const password = document.getElementById('regPassword').value;
             const role = document.getElementById('regRole').value;
             const errorMsg = document.getElementById('regErrorMsg');
             const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -292,6 +307,13 @@
                 submitBtn.disabled = true;
 
                 const users = await getAllUsers();
+                if (users.find(u => u.username?.toLowerCase() === username)) {
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = "Username is already taken. Please choose another.";
+                    submitBtn.innerHTML = 'Create Account <i class="fas fa-user-plus" style="margin-left: 0.5rem;"></i>';
+                    submitBtn.disabled = false;
+                    return;
+                }
                 if (users.find(u => u.email === email)) {
                     errorMsg.style.display = 'block';
                     errorMsg.innerText = "Email is already registered. Please sign in.";
@@ -303,6 +325,8 @@
                 const newUser = {
                     name,
                     email,
+                    username,
+                    password,
                     role,
                     streak: 0,
                     longestStreak: 0,

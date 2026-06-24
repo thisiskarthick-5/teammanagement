@@ -41,6 +41,17 @@ export async function createUser(userData) {
         const users = await getAllUsers();
         userData.id = `TM-${(users.length + 1).toString().padStart(3, '0')}`;
     }
+    // Generate a username if not provided
+    if (!userData.username) {
+        const nameClean = userData.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const randomNum = Math.floor(100 + Math.random() * 900);
+        userData.username = `${nameClean}${randomNum}`;
+    }
+    // Generate a password if not provided
+    if (!userData.password) {
+        const randomPart = Math.random().toString(36).substring(2, 8);
+        userData.password = `ts-${randomPart}`;
+    }
     await setDoc(doc(db, COLLECTIONS.USERS, userData.id), userData);
     return userData;
 }
