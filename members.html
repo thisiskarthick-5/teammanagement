@@ -143,9 +143,12 @@
 
         document.addEventListener('DOMContentLoaded', initSidebar);
 
+        const currentUser = getCurrentUser();
+
         async function renderMembers() {
             try {
-                const users = await getAllUsers();
+                const allUsers = await getAllUsers();
+                const users = allUsers.filter(u => u.teamId === currentUser.teamId);
                 const list = document.getElementById('memberList');
                 list.innerHTML = users.map(u => `
                     <tr class="animate-in">
@@ -196,6 +199,8 @@
                 email: email,
                 streak: 0,
                 longestStreak: 0,
+                teamId: currentUser.teamId,
+                teamName: currentUser.teamName,
                 avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`
             };
 
@@ -209,8 +214,7 @@
             }
         });
 
-        const user = getCurrentUser();
-        if (user && user.role !== 'admin') {
+        if (currentUser && currentUser.role !== 'admin') {
             window.location.href = 'dashboard.html';
         }
 

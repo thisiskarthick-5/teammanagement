@@ -156,7 +156,8 @@
             async function loadStats() {
                 try {
                     const tasks = await getTasks();
-                    const users = await getAllUsers();
+                    const allUsers = await getAllUsers();
+                    const users = allUsers.filter(u => u.teamId === user.teamId);
                     const attendance = await getAllAttendance();
 
                     const statsGrid = document.querySelector('.stats-grid');
@@ -171,7 +172,7 @@
                     ] : [
                         { label: 'Team Streak', value: members.length > 0 ? Math.round(members.reduce((acc, m) => acc + (m.streak || 0), 0) / members.length) : 0, icon: 'fa-bolt', color: '#f59e0b' },
                         { label: 'Total Pending', value: tasks.filter(t => t.status !== 'Approved').length, icon: 'fa-tasks', color: '#10b981' },
-                        { label: 'Daily Activity', value: `${attendance.filter(a => a.date === new Date().toISOString().split('T')[0]).length}/${members.length}`, icon: 'fa-user-check', color: '#06b6d4' },
+                        { label: 'Daily Activity', value: `${attendance.filter(a => a.date === new Date().toISOString().split('T')[0] && members.find(m => m.id === a.userId)).length}/${members.length}`, icon: 'fa-user-check', color: '#06b6d4' },
                         { label: 'Work Velocity', value: '88%', icon: 'fa-chart-line', color: '#8b5cf6' }
                     ];
 
@@ -196,7 +197,7 @@
                         document.getElementById('adminAttendance').style.display = 'block';
 
                         const today = new Date().toISOString().split('T')[0];
-                        const presentToday = attendance.filter(a => a.date === today).length;
+                        const presentToday = attendance.filter(a => a.date === today && members.find(m => m.id === a.userId)).length;
                         document.getElementById('presenceCount').innerText = `${presentToday}/${members.length}`;
 
                         const performanceList = document.getElementById('performanceList');

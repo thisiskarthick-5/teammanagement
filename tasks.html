@@ -177,7 +177,8 @@
         async function renderTasks() {
             try {
                 let tasks = await getTasks();
-                const users = await getAllUsers();
+                const allUsers = await getAllUsers();
+                const users = allUsers.filter(u => u.teamId === currentUser.teamId);
                 const list = document.getElementById('taskList');
 
                 if (currentUser.role === 'member') {
@@ -346,7 +347,8 @@
         async function loadAssignees() {
             if (currentUser.role === 'admin') {
                 try {
-                    const users = await getAllUsers();
+                    const allUsers = await getAllUsers();
+                    const users = allUsers.filter(u => u.teamId === currentUser.teamId);
                     document.getElementById('assignTo').innerHTML = users
                         .filter(u => u.role === 'member')
                         .map(u => `<option value="${u.id}">${u.name} (${u.id})</option>`).join('');

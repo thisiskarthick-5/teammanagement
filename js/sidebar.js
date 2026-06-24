@@ -34,6 +34,12 @@ export function initSidebar() {
                 <a href="dashboard.html" class="nav-link ${path.includes('dashboard') ? 'active' : ''}">
                     <i class="fas fa-th-large"></i> Dashboard
                 </a>
+                <a href="chat.html" class="nav-link ${path.includes('chat') ? 'active' : ''}">
+                    <i class="fas fa-comments"></i> Team Chat
+                </a>
+                <a href="teams.html" class="nav-link ${path.includes('teams') ? 'active' : ''}">
+                    <i class="fas fa-users-gear"></i> My Team
+                </a>
                 <a href="tasks.html" class="nav-link ${path.includes('tasks') ? 'active' : ''}">
                     <i class="fas fa-tasks"></i> Tasks
                 </a>
@@ -77,13 +83,17 @@ export function initSidebar() {
                 <i class="fas fa-layer-group"></i>
                 <span>Home</span>
             </a>
+            <a href="chat.html" class="bottom-nav-link ${path.includes('chat') ? 'active' : ''}">
+                <i class="fas fa-comments"></i>
+                <span>Chat</span>
+            </a>
+            <a href="teams.html" class="bottom-nav-link ${path.includes('teams') ? 'active' : ''}">
+                <i class="fas fa-people-group"></i>
+                <span>Team</span>
+            </a>
             <a href="tasks.html" class="bottom-nav-link ${path.includes('tasks') ? 'active' : ''}">
                 <i class="fas fa-list-check"></i>
                 <span>Tasks</span>
-            </a>
-            <a href="attendance.html" class="bottom-nav-link ${path.includes('attendance') ? 'active' : ''}">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Presence</span>
             </a>
             <a href="profile.html?id=${user.id}" class="bottom-nav-link ${path.includes('profile') ? 'active' : ''}">
                 <i class="fas fa-circle-user"></i>
@@ -93,6 +103,23 @@ export function initSidebar() {
     `;
 
     document.body.insertAdjacentHTML('afterbegin', desktopNavHTML + mobileBottomHTML);
+
+    // --- Team Guard Overlay for non-team members ---
+    if (!user.teamId && (path.includes('dashboard') || path.includes('tasks') || path.includes('attendance') || path.includes('members') || path.includes('notifications'))) {
+        const guardHTML = `
+            <div class="team-guard-overlay">
+                <div class="team-guard-card">
+                    <i class="fas fa-lock"></i>
+                    <h2>Team Workspace Required</h2>
+                    <p class="text-dim">To access collaboration features like the Dashboard, Tasks, Attendance, and Team Members, you must first create or join a team workspace.</p>
+                    <button class="btn btn-secondary" onclick="window.location.href='teams.html'" style="height: 50px; border-radius: 12px; width: 100%;">
+                        <i class="fas fa-users-gear"></i> Set Up My Team
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', guardHTML);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', initSidebar);

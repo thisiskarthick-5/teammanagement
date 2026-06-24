@@ -9,7 +9,9 @@ import {
     updateDoc,
     query,
     where,
-    orderBy
+    orderBy,
+    onSnapshot,
+    deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const COLLECTIONS = {
@@ -57,21 +59,29 @@ export async function updateUser(userId, userData) {
 // --- Task Logic ---
 
 export async function createTask(taskData) {
+    const user = getCurrentUser();
     const docRef = await addDoc(collection(db, COLLECTIONS.TASKS), {
         ...taskData,
+        teamId: user ? user.teamId : null,
         status: 'Not Started',
         createdAt: new Date().toISOString()
     });
-    return { id: docRef.id, ...taskData };
+    return { id: docRef.id, ...taskData, teamId: user ? user.teamId : null };
 }
 
 export async function getTasks(filters = {}) {
-    let q = collection(db, COLLECTIONS.TASKS);
-    if (filters.assignedTo) {
-        q = query(q, where('assignedTo', '==', filters.assignedTo));
-    }
+    const q = collection(db, COLLECTIONS.TASKS);
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    let tasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    const user = getCurrentUser();
+    if (user && user.teamId) {
+        tasks = tasks.filter(t => t.teamId === user.teamId);
+    }
+    if (filters.assignedTo) {
+        tasks = tasks.filter(t => t.assignedTo === filters.assignedTo);
+    }
+    return tasks;
 }
 
 export async function updateTaskStatus(taskId, status, submission = null) {
@@ -225,4 +235,155 @@ export function getCurrentUser() {
 export function logout() {
     localStorage.removeItem('teamSync_user');
     window.location.href = 'index.html';
+}
+
+// --- Team & Chat Logic ---
+
+// Helper to generate a random 6-character code
+function generateTeamCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+}
+
+export async function createTeam(teamName) {
+    const user = getCurrentUser();
+    if (!user) throw new Error("No authenticated user.");
+
+    const code = generateTeamCode();
+    const teamRef = doc(collection(db, 'teams'));
+    const teamId = teamRef.id;
+
+    const teamData = {
+        id: teamId,
+        name: teamName,
+        code: code,
+        createdBy: user.id,
+        createdAt: new Date().toISOString()
+    };
+
+    await setDoc(teamRef, teamData);
+
+    const userRef = doc(db, COLLECTIONS.USERS, user.id);
+    await updateDoc(userRef, {
+        teamId: teamId,
+        teamName: teamName,
+        role: 'admin'
+    });
+
+    user.teamId = teamId;
+    user.teamName = teamName;
+    user.role = 'admin';
+    setCurrentUser(user);
+
+    return teamData;
+}
+
+export async function joinTeam(inviteCode) {
+    const user = getCurrentUser();
+    if (!user) throw new Error("No authenticated user.");
+
+    const q = query(collection(db, 'teams'), where('code', '==', inviteCode.trim().toUpperCase()));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        throw new Error("Invalid team invite code. Team not found.");
+    }
+
+    const teamDoc = querySnapshot.docs[0];
+    const teamData = teamDoc.data();
+
+    const userRef = doc(db, COLLECTIONS.USERS, user.id);
+    await updateDoc(userRef, {
+        teamId: teamData.id,
+        teamName: teamData.name,
+        role: 'member'
+    });
+
+    user.teamId = teamData.id;
+    user.teamName = teamData.name;
+    user.role = 'member';
+    setCurrentUser(user);
+
+    return teamData;
+}
+
+export async function getTeamDetails(teamId) {
+    if (!teamId) return null;
+    const docRef = doc(db, 'teams', teamId);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
+}
+
+export async function getTeamMembers(teamId) {
+    if (!teamId) return [];
+    const q = query(collection(db, COLLECTIONS.USERS), where('teamId', '==', teamId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+export async function leaveTeam() {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    const userRef = doc(db, COLLECTIONS.USERS, user.id);
+    await updateDoc(userRef, {
+        teamId: null,
+        teamName: null,
+        role: 'member'
+    });
+
+    user.teamId = null;
+    user.teamName = null;
+    user.role = 'member';
+    setCurrentUser(user);
+}
+
+export async function deleteTeam(teamId) {
+    const user = getCurrentUser();
+    if (!user || user.role !== 'admin') return;
+
+    const members = await getTeamMembers(teamId);
+    for (const member of members) {
+        const memberRef = doc(db, COLLECTIONS.USERS, member.id);
+        await updateDoc(memberRef, {
+            teamId: null,
+            teamName: null,
+            role: 'member'
+        });
+    }
+
+    const teamRef = doc(db, 'teams', teamId);
+    await deleteDoc(teamRef);
+
+    user.teamId = null;
+    user.teamName = null;
+    user.role = 'member';
+    setCurrentUser(user);
+}
+
+export async function sendChatMessage(teamId, messageText) {
+    const user = getCurrentUser();
+    if (!user) throw new Error("No authenticated user.");
+
+    const messagesCol = collection(db, 'teams', teamId, 'messages');
+    await addDoc(messagesCol, {
+        senderId: user.id,
+        senderName: user.name,
+        senderAvatar: user.avatar,
+        text: messageText,
+        createdAt: new Date().toISOString()
+    });
+}
+
+export function subscribeToChatMessages(teamId, callback) {
+    const messagesCol = collection(db, 'teams', teamId, 'messages');
+    const q = query(messagesCol, orderBy('createdAt', 'asc'));
+    return onSnapshot(q, (snapshot) => {
+        const messages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        callback(messages);
+    });
 }

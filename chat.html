@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Chat | TEAMSYNC</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Extra styles specifically for emoji picker popup */
+        .emoji-picker-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.35rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .emoji-picker-btn:hover {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .emoji-popover {
+            position: absolute;
+            bottom: 80px;
+            left: 20px;
+            background: white;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+            border-radius: 12px;
+            padding: 0.75rem;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            z-index: 100;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .emoji-item {
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            text-align: center;
+            transition: transform 0.1s;
+        }
+
+        .emoji-item:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Guard screen if not in team -->
+    <div id="noTeamGuard" class="team-guard-overlay" style="display: none;">
+        <div class="team-guard-card">
+            <i class="fas fa-comments"></i>
+            <h2>Team Chat Restricted</h2>
+            <p class="text-dim">To start chatting with your colleagues in real-time, you must first belong to a team workspace. Create or join one now!</p>
+            <button class="btn btn-secondary" onclick="window.location.href='teams.html'" style="height: 50px; border-radius: 12px; width: 100%;">
+                <i class="fas fa-users-gear"></i> Set Up My Team
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Chat Workspace -->
+    <main class="main-content">
+        <div class="chat-container">
+            <!-- Sidebar Panel: List of members -->
+            <div class="chat-sidebar">
+                <div class="chat-sidebar-header">
+                    <h3 id="sidebarTeamName" style="margin-bottom: 0.25rem; font-weight: 800;">My Team</h3>
+                    <span class="text-dim" style="font-size: 0.8rem; font-weight: 600;">Linked Cohort</span>
+                </div>
+                <div class="chat-member-list" id="chatMemberList">
+                    <!-- Members injected here -->
+                </div>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="chat-main">
+                <!-- Chat Header -->
+                <div class="chat-header">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="width: 42px; height: 42px; background: #ecfdf5; color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800;" id="chatHeaderTitle">Team Channel</h3>
+                            <span class="text-dim" style="font-size: 0.75rem; font-weight: 600;" id="chatHeaderSub">Real-time collaboration channel</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-dim" style="font-size: 0.8rem; font-weight: 700; background: var(--bg-main); padding: 0.4rem 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border);" id="chatTeamCodeBadge">
+                            CODE: XXXXXX
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Messages Display -->
+                <div class="chat-messages" id="chatMessagesArea">
+                    <!-- Dynamic Messages -->
+                    <div class="text-dim" style="text-align: center; margin: auto; font-weight: 600;">Loading chat stream...</div>
+                </div>
+
+                <!-- Composer Input -->
+                <div class="chat-input-container">
+                    <button class="emoji-picker-btn" id="emojiToggle" title="Add Emoji">
+                        <i class="far fa-smile"></i>
+                    </button>
+                    <!-- Popover emoji list -->
+                    <div class="emoji-popover" id="emojiPopover" style="display: none;">
+                        <span class="emoji-item">😀</span>
+                        <span class="emoji-item">😂</span>
+                        <span class="emoji-item">😍</span>
+                        <span class="emoji-item">👍</span>
+                        <span class="emoji-item">🔥</span>
+                        <span class="emoji-item">🎉</span>
+                        <span class="emoji-item">🚀</span>
+                        <span class="emoji-item">💻</span>
+                        <span class="emoji-item">👏</span>
+                        <span class="emoji-item">💯</span>
+                    </div>
+
+                    <form id="chatForm" class="chat-input-form">
+                        <input type="text" id="chatInputText" class="chat-input" placeholder="Type a message..." required autocomplete="off">
+                        <button type="submit" class="chat-send-btn" title="Send message">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { sendChatMessage, subscribeToChatMessages, getTeamDetails, getTeamMembers, getCurrentUser } from './js/data.js';
+        import { initSidebar } from './js/sidebar.js';
+
+        document.addEventListener('DOMContentLoaded', initSidebar);
+
+        const currentUser = getCurrentUser();
+
+        async function initChat() {
+            if (!currentUser) return;
+
+            if (!currentUser.teamId) {
+                document.getElementById('noTeamGuard').style.display = 'flex';
+                return;
+            }
+
+            try {
+                // Fetch team meta
+                const team = await getTeamDetails(currentUser.teamId);
+                if (team) {
+                    document.getElementById('sidebarTeamName').innerText = team.name;
+                    document.getElementById('chatHeaderTitle').innerText = team.name;
+                    document.getElementById('chatTeamCodeBadge').innerText = `INVITE CODE: ${team.code}`;
+                }
+
+                // Fetch members
+                const members = await getTeamMembers(currentUser.teamId);
+                const memberListContainer = document.getElementById('chatMemberList');
+                
+                memberListContainer.innerHTML = members.map(m => `
+                    <div class="chat-member-item">
+                        <img src="${m.avatar}" style="width: 38px; height: 38px; border-radius: 50%; box-shadow: var(--shadow-sm);">
+                        <div style="flex: 1; overflow: hidden;">
+                            <div style="font-weight: 700; color: var(--text-main); font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.name}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">${m.role}</div>
+                        </div>
+                        <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;" title="Online"></div>
+                    </div>
+                `).join('');
+
+                document.getElementById('chatHeaderSub').innerText = `${members.length} member${members.length === 1 ? '' : 's'} connected`;
+
+                // Subscribe to real-time chat messages
+                const messagesArea = document.getElementById('chatMessagesArea');
+                let isInitialLoad = true;
+
+                subscribeToChatMessages(currentUser.teamId, (messages) => {
+                    if (messages.length === 0) {
+                        messagesArea.innerHTML = `<div class="text-dim" style="text-align: center; margin: auto; font-weight: 600; font-size: 0.9rem;"><i class="far fa-message"></i> No messages yet. Start the conversation!</div>`;
+                        return;
+                    }
+
+                    messagesArea.innerHTML = messages.map(msg => {
+                        const isMe = msg.senderId === currentUser.id;
+                        const bubbleClass = isMe ? 'sent' : 'received';
+                        const time = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                        
+                        return `
+                            <div class="message-bubble ${bubbleClass}">
+                                ${!isMe ? `<span class="message-sender">${msg.senderName}</span>` : ''}
+                                <span class="message-text">${msg.text}</span>
+                                <span class="message-time">${time}</span>
+                            </div>
+                        `;
+                    }).join('');
+
+                    // Scroll to bottom
+                    messagesArea.scrollTop = messagesArea.scrollHeight;
+                });
+
+            } catch (err) {
+                console.error("Error initializing chat workspace:", err);
+            }
+        }
+
+        // --- Event Listeners ---
+
+        // Send Message
+        document.getElementById('chatForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('chatInputText');
+            const text = input.value.trim();
+            if (!text) return;
+
+            try {
+                input.value = '';
+                await sendChatMessage(currentUser.teamId, text);
+            } catch (err) {
+                console.error("Failed to send message:", err);
+                alert("Error sending message. Please try again.");
+            }
+        });
+
+        // Emoji Picker Toggle
+        const emojiToggle = document.getElementById('emojiToggle');
+        const emojiPopover = document.getElementById('emojiPopover');
+
+        emojiToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const visible = emojiPopover.style.display === 'grid';
+            emojiPopover.style.display = visible ? 'none' : 'grid';
+        });
+
+        document.addEventListener('click', () => {
+            emojiPopover.style.display = 'none';
+        });
+
+        emojiPopover.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (e.target.classList.contains('emoji-item')) {
+                const emoji = e.target.innerText;
+                const input = document.getElementById('chatInputText');
+                input.value += emoji;
+                emojiPopover.style.display = 'none';
+                input.focus();
+            }
+        });
+
+        initChat();
+    </script>
+</body>
+
+</html>
