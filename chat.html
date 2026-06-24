@@ -7,6 +7,10 @@
     <title>Team Chat | TEAMSYNC</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Load the Jitsi Meet External Iframe API -->
+    <script src="https://meet.jit.si/external_api.js"></script>
+
     <style>
         /* Extra styles specifically for emoji picker popup */
         .emoji-picker-btn {
@@ -97,7 +101,13 @@
                             <span class="text-dim" style="font-size: 0.75rem; font-weight: 600;" id="chatHeaderSub">Real-time collaboration channel</span>
                         </div>
                     </div>
-                    <div>
+                    
+                    <div style="display: flex; align-items: center;">
+                        <!-- Video Call Trigger Button -->
+                        <button class="chat-call-btn" id="startCallBtn" title="Start Private Video Call">
+                            <i class="fas fa-video"></i>
+                        </button>
+                        
                         <span class="text-dim" style="font-size: 0.8rem; font-weight: 700; background: var(--bg-main); padding: 0.4rem 0.8rem; border-radius: 8px; border: 1px solid var(--glass-border);" id="chatTeamCodeBadge">
                             CODE: XXXXXX
                         </span>
@@ -106,7 +116,6 @@
 
                 <!-- Messages Display -->
                 <div class="chat-messages" id="chatMessagesArea">
-                    <!-- Dynamic Messages -->
                     <div class="text-dim" style="text-align: center; margin: auto; font-weight: 600;">Loading chat stream...</div>
                 </div>
 
@@ -140,6 +149,31 @@
         </div>
     </main>
 
+    <!-- Video Call Overlay Modal -->
+    <div class="video-call-modal" id="videoCallModal">
+        <div class="video-call-content" id="videoCallContent">
+            <div class="video-call-header">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%; position: relative;">
+                        <div class="meeting-invite-pulse" style="border-radius: 50%; background: #ef4444;"></div>
+                    </div>
+                    <span style="font-weight: 800; font-size: 0.95rem; color: var(--text-main);" id="videoCallTitle">Private Team Video Call</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <button class="btn" id="minimizeCallBtn" style="padding: 0.4rem 0.6rem; background: #e2e8f0; color: #475569; border-radius: 6px; font-size: 0.8rem; border: none; font-weight: 700; cursor: pointer;" title="Minimize Call (PiP)">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button class="btn" id="endCallBtn" style="padding: 0.4rem 0.8rem; background: #fee2e2; color: #ef4444; border-radius: 6px; font-size: 0.8rem; border: none; font-weight: 800; cursor: pointer;" title="Leave Video Call">
+                        <i class="fas fa-phone-slash"></i> End Call
+                    </button>
+                </div>
+            </div>
+            <div class="video-call-body" id="meetIframeContainer">
+                <!-- Jitsi Frame will inject here -->
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { sendChatMessage, subscribeToChatMessages, getTeamDetails, getTeamMembers, getCurrentUser } from './js/data.js';
         import { initSidebar } from './js/sidebar.js';
@@ -147,6 +181,7 @@
         document.addEventListener('DOMContentLoaded', initSidebar);
 
         const currentUser = getCurrentUser();
+        let jitsiAPI = null;
 
         async function initChat() {
             if (!currentUser) return;
@@ -184,7 +219,6 @@
 
                 // Subscribe to real-time chat messages
                 const messagesArea = document.getElementById('chatMessagesArea');
-                let isInitialLoad = true;
 
                 subscribeToChatMessages(currentUser.teamId, (messages) => {
                     if (messages.length === 0) {
@@ -197,6 +231,31 @@
                         const bubbleClass = isMe ? 'sent' : 'received';
                         const time = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
                         
+                        // Check for meeting invitation cards
+                        if (msg.text && msg.text.startsWith('[MEETING_ACTIVE]')) {
+                            const inviteDesc = msg.text.replace('[MEETING_ACTIVE]', '').trim();
+                            return `
+                                <div class="message-bubble ${bubbleClass}" style="background: transparent; box-shadow: none; padding: 0; align-self: ${isMe ? 'flex-end' : 'flex-start'};">
+                                    <div class="meeting-invite-card">
+                                        <div class="meeting-invite-header">
+                                            <div class="meeting-invite-icon">
+                                                <div class="meeting-invite-pulse"></div>
+                                                <i class="fas fa-video"></i>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 800; font-size: 0.9rem; color: var(--text-main);">Video Call Started</div>
+                                                <div style="font-size: 0.75rem; color: var(--text-dim);">${msg.senderName} initiated a meeting</div>
+                                            </div>
+                                        </div>
+                                        <div style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.4;">${inviteDesc}</div>
+                                        <button class="meeting-invite-btn" onclick="window.joinTeamVideoCall()">
+                                            <i class="fas fa-phone"></i> Join Call
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+
                         return `
                             <div class="message-bubble ${bubbleClass}">
                                 ${!isMe ? `<span class="message-sender">${msg.senderName}</span>` : ''}
@@ -215,9 +274,108 @@
             }
         }
 
-        // --- Event Listeners ---
+        // --- Video Call Handlers ---
+        async function startVideoCall(sendInvite = false) {
+            const modal = document.getElementById('videoCallModal');
+            const container = document.getElementById('meetIframeContainer');
+            
+            // If already active, restore view
+            if (jitsiAPI) {
+                modal.style.display = 'flex';
+                document.getElementById('videoCallContent').classList.remove('minimized');
+                return;
+            }
+            
+            modal.style.display = 'flex';
+            container.innerHTML = ''; // Clear container
+            
+            const domain = 'meet.jit.si';
+            const options = {
+                roomName: `teamsync_meet_${currentUser.teamId}`,
+                width: '100%',
+                height: '100%',
+                parentNode: container,
+                userInfo: {
+                    displayName: currentUser.name
+                },
+                configOverwrite: {
+                    startWithAudioMuted: false,
+                    startWithVideoMuted: false,
+                    prejoinPageEnabled: false
+                },
+                interfaceConfigOverwrite: {
+                    TILE_VIEW_MAX_COLUMNS: 3
+                }
+            };
+            
+            // Instantiate external iframe API
+            jitsiAPI = new JitsiMeetExternalAPI(domain, options);
+            
+            // Handle Jitsi closing events
+            jitsiAPI.addEventListener('readyToClose', () => {
+                endVideoCall();
+            });
+            
+            // Send call invitation card in real-time
+            if (sendInvite) {
+                try {
+                    await sendChatMessage(currentUser.teamId, `[MEETING_ACTIVE] Team video call initiated. Join room to coordinate in real-time.`);
+                } catch (err) {
+                    console.error("Could not broadcast meeting invitation card:", err);
+                }
+            }
+        }
 
-        // Send Message
+        function endVideoCall() {
+            if (jitsiAPI) {
+                jitsiAPI.dispose();
+                jitsiAPI = null;
+            }
+            document.getElementById('videoCallModal').style.display = 'none';
+            document.getElementById('videoCallContent').classList.remove('minimized');
+            document.getElementById('meetIframeContainer').innerHTML = '';
+        }
+
+        // Expose to window so onclick handlers on message cards can execute it
+        window.joinTeamVideoCall = () => {
+            startVideoCall(false);
+        };
+
+        // Header start button
+        document.getElementById('startCallBtn').addEventListener('click', () => {
+            startVideoCall(true);
+        });
+
+        // Close Call
+        document.getElementById('endCallBtn').addEventListener('click', () => {
+            endVideoCall();
+        });
+
+        // Minimize Call (PiP)
+        const minimizeBtn = document.getElementById('minimizeCallBtn');
+        const modalContent = document.getElementById('videoCallContent');
+        
+        minimizeBtn.addEventListener('click', () => {
+            const isMin = modalContent.classList.toggle('minimized');
+            const modal = document.getElementById('videoCallModal');
+            
+            if (isMin) {
+                modal.style.background = 'none';
+                modal.style.backdropFilter = 'none';
+                modal.style.pointerEvents = 'none';
+                modalContent.style.pointerEvents = 'auto'; // enable interaction in pip mode
+                minimizeBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                minimizeBtn.title = "Maximize Call";
+            } else {
+                modal.style.background = 'rgba(15, 23, 42, 0.45)';
+                modal.style.backdropFilter = 'blur(8px)';
+                modal.style.pointerEvents = 'auto';
+                minimizeBtn.innerHTML = '<i class="fas fa-minus"></i>';
+                minimizeBtn.title = "Minimize Call (PiP)";
+            }
+        });
+
+        // --- Message Send ---
         document.getElementById('chatForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const input = document.getElementById('chatInputText');
@@ -233,7 +391,7 @@
             }
         });
 
-        // Emoji Picker Toggle
+        // --- Emoji Picker ---
         const emojiToggle = document.getElementById('emojiToggle');
         const emojiPopover = document.getElementById('emojiPopover');
 
