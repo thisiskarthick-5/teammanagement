@@ -34,6 +34,9 @@ export function initSidebar() {
                 <a href="dashboard.html" class="nav-link ${path.includes('dashboard') ? 'active' : ''}">
                     <i class="fas fa-th-large"></i> Dashboard
                 </a>
+                <a href="analytics.html" class="nav-link ${path.includes('analytics') ? 'active' : ''}">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a>
                 <a href="chat.html" class="nav-link ${path.includes('chat') ? 'active' : ''}">
                     <i class="fas fa-comments"></i> Team Chat
                 </a>
@@ -91,9 +94,9 @@ export function initSidebar() {
                 <i class="fas fa-people-group"></i>
                 <span>Team</span>
             </a>
-            <a href="tasks.html" class="bottom-nav-link ${path.includes('tasks') ? 'active' : ''}">
-                <i class="fas fa-list-check"></i>
-                <span>Tasks</span>
+            <a href="analytics.html" class="bottom-nav-link ${path.includes('analytics') ? 'active' : ''}">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
             </a>
             <a href="profile.html?id=${user.id}" class="bottom-nav-link ${path.includes('profile') ? 'active' : ''}">
                 <i class="fas fa-circle-user"></i>
@@ -105,7 +108,7 @@ export function initSidebar() {
     document.body.insertAdjacentHTML('afterbegin', desktopNavHTML + mobileBottomHTML);
 
     // --- Team Guard Overlay for non-team members ---
-    if (!user.teamId && (path.includes('dashboard') || path.includes('tasks') || path.includes('attendance') || path.includes('members') || path.includes('notifications'))) {
+    if (!user.teamId && (path.includes('dashboard') || path.includes('tasks') || path.includes('attendance') || path.includes('members') || path.includes('notifications') || path.includes('analytics'))) {
         const guardHTML = `
             <div class="team-guard-overlay">
                 <div class="team-guard-card">

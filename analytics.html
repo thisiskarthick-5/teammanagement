@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contributors | TEAMSYNC</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN for beautiful interactive graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            /* Theme color variables derived from style.css for analytics elements */
+            --analytics-primary: #059669; /* Emerald Green */
+            --analytics-primary-hover: #047857;
+            --analytics-primary-light: #34d399;
+            --analytics-bg-track: #f1f5f9;
+            --analytics-border: #e2e8f0;
+            --analytics-text-main: #0f172a;
+            --analytics-text-dim: #64748b;
+            --analytics-bg-card: #ffffff;
+            --analytics-bg-sparkline: #f8fafc;
+            --additions-color: #10b981; /* Green additions */
+            --deletions-color: #ef4444; /* Red deletions */
+        }
+
+        /* Adjust main header titles for light-mode readability */
+        h1, h2, h3 {
+            color: var(--text-main) !important;
+        }
+
+        /* Dropdowns matching light theme styling precisely */
+        .analytics-select {
+            background: #ffffff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") no-repeat right 12px center;
+            background-size: 10px;
+            padding-right: 32px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border: 1px solid var(--analytics-border);
+            color: var(--analytics-text-main);
+            padding-left: 12px;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .analytics-select:hover {
+            border-color: #94a3b8;
+            background-color: #f8fafc;
+        }
+
+        /* Timeline slider container styling */
+        .timeline-slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            background: var(--analytics-bg-sparkline);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--analytics-border);
+            margin-top: 1.5rem;
+        }
+
+        .timeline-slider-track {
+            position: relative;
+            height: 40px;
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid var(--analytics-border);
+            overflow: visible;
+        }
+
+        /* Custom Highlight range and drag handles styled with emerald accents */
+        .timeline-slider-highlight {
+            position: absolute;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background: rgba(16, 185, 129, 0.08);
+            border-top: 1.5px solid var(--analytics-primary-light);
+            border-bottom: 1.5px solid var(--analytics-primary-light);
+            pointer-events: none;
+            box-sizing: border-box;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: -3px;
+            width: 12px;
+            height: 46px;
+            background: #ffffff;
+            border: 1.5px solid var(--analytics-primary);
+            border-radius: 4px;
+            transform: translateX(-50%);
+            cursor: ew-resize;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .slider-handle div {
+            width: 2px;
+            height: 12px;
+            background: var(--analytics-text-dim);
+        }
+
+        .timeline-slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--analytics-text-dim);
+            font-weight: 600;
+            padding: 0.25rem 0.5rem 0;
+        }
+
+        /* Contributor Card styling */
+        .contributor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .contributor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .contributor-card {
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: #ffffff !important;
+            border: 1px solid var(--analytics-border) !important;
+        }
+
+        .contributor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .contributor-rank-badge {
+            background: var(--analytics-bg-sparkline);
+            border: 1px solid var(--analytics-border);
+            color: var(--analytics-text-dim);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .stat-additions {
+            color: var(--additions-color);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .stat-deletions {
+            color: var(--deletions-color);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="main-content">
+        <!-- Dashboard Header -->
+        <header class="responsive-flex" style="margin-bottom: 2rem; border-bottom: 1px solid var(--analytics-border); padding-bottom: 1.5rem;">
+            <div>
+                <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--analytics-text-main); margin: 0;">Contributors</h1>
+                <p style="color: var(--analytics-text-dim); font-size: 0.95rem; margin-top: 0.25rem;">Contributions per week to main, excluding merge commits</p>
+            </div>
+            <!-- Filters -->
+            <div style="display: flex; gap: 1rem;">
+                <select class="analytics-select" id="periodSelect">
+                    <option value="90">Period: Last 3 months</option>
+                    <option value="30">Period: Last 30 days</option>
+                    <option value="365">Period: Last 1 year</option>
+                </select>
+                <select class="analytics-select" id="metricSelect">
+                    <option value="performance">Contributions: Member Performance</option>
+                    <option value="submissions">Contributions: Work Submissions</option>
+                    <option value="attendance">Contributions: Attendance Presence</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Main Chart Card -->
+        <div class="glass" style="padding: 2rem; margin-bottom: 2rem; border-radius: 12px; background: #ffffff;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--analytics-text-main); margin: 0;">Commits over time</h3>
+                    <p style="color: var(--analytics-text-dim); font-size: 0.8rem; margin-top: 0.15rem;" id="chartTimePeriod">Weekly from 21 Mar 2026 to 21 Jun 2026</p>
+                </div>
+                <div style="color: var(--analytics-text-dim); font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="fas fa-ellipsis-h" title="More options"></i>
+                    <i class="fas fa-cog" title="Chart settings"></i>
+                </div>
+            </div>
+
+            <!-- Main Canvas Chart -->
+            <div style="position: relative; height: 280px; width: 100%;">
+                <canvas id="mainContributionsChart"></canvas>
+            </div>
+
+            <!-- Timeline Range Slider -->
+            <div class="timeline-slider-container" style="user-select: none; -webkit-user-select: none;">
+                <div class="timeline-slider-track" id="timelineSliderTrack">
+                    <!-- Background Line chart drawn on canvas -->
+                    <canvas id="sliderBgCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.35;"></canvas>
+                    
+                    <!-- Slider Selected Range Highlight -->
+                    <div class="timeline-slider-highlight" id="sliderHighlight" style="position: absolute; left: 0%; width: 100%; height: 100%;"></div>
+                    
+                    <!-- Left Drag Handle -->
+                    <div class="slider-handle" id="sliderHandleLeft" style="left: 0%;">
+                        <div></div>
+                    </div>
+                    
+                    <!-- Right Drag Handle -->
+                    <div class="slider-handle" id="sliderHandleRight" style="left: 100%;">
+                        <div></div>
+                    </div>
+                </div>
+                
+                <!-- Timeline Labels -->
+                <div class="timeline-slider-labels" id="timelineSliderLabels">
+                    <span>Apr 26</span>
+                    <span>May 26</span>
+                    <span>Jun 26</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Title -->
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--analytics-text-main); margin-top: 2.5rem; border-bottom: 1px solid var(--analytics-border); padding-bottom: 0.75rem;">Cohort Activity Directory</h3>
+
+        <!-- Contributors Grid -->
+        <div class="contributor-grid" id="contributorsGrid">
+            <!-- Dynamically loaded contributor cards -->
+            <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--analytics-text-dim);">Loading analytical data...</div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { getTasks, getTeamMembers, getCurrentUser, getAllAttendance } from './js/data.js';
+        import { initSidebar } from './js/sidebar.js';
+
+        document.addEventListener('DOMContentLoaded', initSidebar);
+
+        const currentUser = getCurrentUser();
+        let chartInstance = null;
+        let miniCharts = {};
+        
+        // Data states
+        let allWeeklyDates = [];
+        let allWeeklyLabels = [];
+        let totalWeeklyActivity = [];
+        let contributorsData = [];
+        
+        // Slider drag state
+        let isDraggingLeft = false;
+        let isDraggingRight = false;
+        let sliderLeftPercent = 0;
+        let sliderRightPercent = 100;
+
+        // Helper to find the week index a date falls into
+        function getWeekIndexForDate(dateStr, periodDays) {
+            const date = new Date(dateStr);
+            const currentDate = new Date();
+            const diffTime = currentDate.getTime() - date.getTime();
+            const diffDays = diffTime / (1000 * 60 * 60 * 24);
+            if (diffDays < 0 || diffDays > periodDays) return -1;
+            
+            const weeksCount = Math.ceil(periodDays / 7);
+            const weekIndex = (weeksCount - 1) - Math.floor(diffDays / 7);
+            return weekIndex >= 0 && weekIndex < weeksCount ? weekIndex : -1;
+        }
+
+        // Generate weekly labels based on selected period
+        function generateWeeklyLabels(days) {
+            const labels = [];
+            const dates = [];
+            const currentDate = new Date();
+            const weeksCount = Math.ceil(days / 7);
+            
+            for (let i = weeksCount - 1; i >= 0; i--) {
+                const date = new Date(currentDate.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+                dates.push(date);
+                const day = date.getDate();
+                const month = date.toLocaleString('default', { month: 'short' });
+                labels.push(`${day} ${month}`);
+            }
+            return { labels, dates };
+        }
+
+        async function loadAnalytics() {
+            if (!currentUser || !currentUser.teamId) return;
+
+            try {
+                // Fetch team members, tasks, and attendance logs
+                const members = await getTeamMembers(currentUser.teamId);
+                const tasks = await getTasks();
+                let attendance = [];
+                try {
+                    attendance = await getAllAttendance();
+                } catch (e) {
+                    console.warn("Could not retrieve attendance log:", e);
+                }
+
+                // Filter attendance records by members of this team
+                const memberIds = members.map(m => m.id);
+                const teamAttendance = attendance.filter(att => memberIds.includes(att.userId));
+
+                const metricType = document.getElementById('metricSelect').value;
+                const periodDays = parseInt(document.getElementById('periodSelect').value);
+                
+                // Get weeks matching the selection
+                const dataConfig = generateWeeklyLabels(periodDays);
+                allWeeklyLabels = dataConfig.labels;
+                allWeeklyDates = dataConfig.dates;
+                const N = allWeeklyDates.length;
+
+                // Adjust Main Card title to represent selected metric
+                const cardTitle = document.querySelector('.glass h3');
+                if (cardTitle) {
+                    cardTitle.innerText = metricType === 'performance' ? 'Performance over time' : 
+                                         (metricType === 'submissions' ? 'Work submissions over time' : 'Attendance check-ins over time');
+                }
+
+                // Formulate analytics dataset per member from real Firestore records
+                contributorsData = members.map(m => {
+                    const memberTasks = tasks.filter(t => t.assignedTo === m.id);
+                    const memberNotes = m.studyNotes || [];
+                    const memberAttendance = teamAttendance.filter(att => att.userId === m.id);
+
+                    const codeSeed = (m.id.charCodeAt(3) || 1) + (m.name.length * 10);
+                    const weeklyData = Array(N).fill(0);
+                    
+                    if (metricType === 'performance') {
+                        // Weighted performance: 
+                        // - Approved Task: +10 points
+                        memberTasks.filter(t => t.status === 'Approved').forEach(t => {
+                            const dateStr = t.createdAt || new Date().toISOString();
+                            const weekIdx = getWeekIndexForDate(dateStr, periodDays);
+                            if (weekIdx !== -1) {
+                                weeklyData[weekIdx] += 10;
+                            }
+                        });
+
+                        // - Task Work Submission: +5 points
+                        memberTasks.filter(t => t.submission && t.submission.date).forEach(t => {
+                            const weekIdx = getWeekIndexForDate(t.submission.date, periodDays);
+                            if (weekIdx !== -1) {
+                                weeklyData[weekIdx] += 5;
+                            }
+                        });
+                        
+                        // - Study Note Published: +3 points
+                        memberNotes.forEach(note => {
+                            const dateStr = note.date || new Date().toISOString();
+                            const weekIdx = getWeekIndexForDate(dateStr, periodDays);
+                            if (weekIdx !== -1) {
+                                weeklyData[weekIdx] += 3;
+                            }
+                        });
+                        
+                        // - Attendance checked: +2 points
+                        memberAttendance.forEach(att => {
+                            const weekIdx = getWeekIndexForDate(att.date, periodDays);
+                            if (weekIdx !== -1) {
+                                weeklyData[weekIdx] += 2;
+                            }
+                        });
+
+                        // Baseline setup reward: +5 points in first week
+                        weeklyData[0] += 5;
+                        
+                    } else if (metricType === 'submissions') {
+                        // Count actual submitted task proofs
+                        memberTasks.filter(t => t.submission && t.submission.date).forEach(t => {
+                            const weekIdx = getWeekIndexForDate(t.submission.date, periodDays);
+                            if (weekIdx !== -1) {
+                                weeklyData[weekIdx] += 1;
+                            }
+                        });
+                    } else if (metricType === 'attendance') {
+                        // Count attendance check-ins
+                        memberAttendance.forEach(att => {
+                            const weekIdx = getWeekIndexForDate(att.date, periodDays);
+                            if (weekIdx !== -1) {
+                                weeklyData[weekIdx] += 1;
+                            }
+                        });
+                    }
+
+                    return {
+                        id: m.id,
+                        name: m.name,
+                        avatar: m.avatar,
+                        username: m.username || m.name.toLowerCase().replace(/[^a-z0-9]/g, ''),
+                        codeSeed: codeSeed,
+                        weeklyData: weeklyData
+                    };
+                });
+
+                // Calculate total weekly sum of contributions
+                totalWeeklyActivity = Array(N).fill(0);
+                contributorsData.forEach(c => {
+                    c.weeklyData.forEach((val, idx) => {
+                        totalWeeklyActivity[idx] += val;
+                    });
+                });
+
+                // Render Timeline Slider background sparkline & label markers
+                drawSliderBackgroundChart('sliderBgCanvas', totalWeeklyActivity);
+                renderSliderLabels(allWeeklyDates);
+
+                // Reset slider handles to full range
+                sliderLeftPercent = 0;
+                sliderRightPercent = 100;
+                updateSliderHandlesUI();
+
+                // Setup the interactive dragging code
+                setupSliderEvents();
+
+                // Trigger initial rendering of full range
+                updateChartsAndData(0, N - 1);
+
+            } catch (err) {
+                console.error("Error generating analytics:", err);
+            }
+        }
+
+        // Draw overall activity line chart inside the slider track (Emerald Green theme)
+        function drawSliderBackgroundChart(canvasId, data) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Adjust to container size
+            const rect = canvas.parentNode.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (data.length < 2) return;
+            
+            const maxVal = Math.max(...data) || 1;
+            const stepX = canvas.width / (data.length - 1);
+            
+            // Draw filled area
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            for (let i = 0; i < data.length; i++) {
+                const x = i * stepX;
+                const y = canvas.height - (data[i] / maxVal) * (canvas.height * 0.65) - 3;
+                ctx.lineTo(x, y);
+            }
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.closePath();
+            
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, 'rgba(5, 150, 105, 0.25)'); // soft emerald transparency
+            gradient.addColorStop(1, 'rgba(5, 150, 105, 0.0)');
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // Draw stroke line
+            ctx.beginPath();
+            for (let i = 0; i < data.length; i++) {
+                const x = i * stepX;
+                const y = canvas.height - (data[i] / maxVal) * (canvas.height * 0.65) - 3;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = '#059669'; // Emerald stroke
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Draw subtle vertical tick lines matching the labels
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            
+            const tickIndices = [0, Math.floor(data.length / 2), data.length - 1];
+            const uniqueTicks = [...new Set(tickIndices)];
+            
+            uniqueTicks.forEach(idx => {
+                const x = idx * stepX;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            });
+            ctx.setLineDash([]);
+        }
+
+        // Render slider labels at the bottom of the track
+        function renderSliderLabels(dates) {
+            const labelsContainer = document.getElementById('timelineSliderLabels');
+            labelsContainer.innerHTML = '';
+            
+            if (dates.length === 0) return;
+            
+            const indices = [0, Math.floor(dates.length / 2), dates.length - 1];
+            const uniqueIndices = [...new Set(indices)];
+            
+            uniqueIndices.forEach(idx => {
+                const date = dates[idx];
+                const labelStr = date.toLocaleString('default', { month: 'short' }) + ' ' + date.getFullYear().toString().slice(-2);
+                const span = document.createElement('span');
+                span.innerText = labelStr;
+                labelsContainer.appendChild(span);
+            });
+        }
+
+        // Setup Drag Event Listeners
+        function setupSliderEvents() {
+            const track = document.getElementById('timelineSliderTrack');
+            const handleLeft = document.getElementById('sliderHandleLeft');
+            const handleRight = document.getElementById('sliderHandleRight');
+            const N = allWeeklyDates.length;
+
+            const onDrag = (clientX) => {
+                const rect = track.getBoundingClientRect();
+                let percent = ((clientX - rect.left) / rect.width) * 100;
+                percent = Math.max(0, Math.min(100, percent));
+                
+                const minGapPercent = (100 / (N - 1)) || 5;
+                
+                if (isDraggingLeft) {
+                    sliderLeftPercent = Math.min(percent, sliderRightPercent - minGapPercent);
+                } else if (isDraggingRight) {
+                    sliderRightPercent = Math.max(percent, sliderLeftPercent + minGapPercent);
+                }
+                
+                updateSliderHandlesUI();
+                
+                const i_start = Math.round((sliderLeftPercent / 100) * (N - 1));
+                const i_end = Math.round((sliderRightPercent / 100) * (N - 1));
+                
+                updateChartsAndData(i_start, i_end);
+            };
+
+            const onDragEnd = () => {
+                if (!isDraggingLeft && !isDraggingRight) return;
+                
+                isDraggingLeft = false;
+                isDraggingRight = false;
+                
+                // Snap handles to precise ticks
+                const i_start = Math.round((sliderLeftPercent / 100) * (N - 1));
+                const i_end = Math.round((sliderRightPercent / 100) * (N - 1));
+                
+                sliderLeftPercent = (i_start / (N - 1)) * 100;
+                sliderRightPercent = (i_end / (N - 1)) * 100;
+                
+                updateSliderHandlesUI();
+                updateChartsAndData(i_start, i_end);
+            };
+
+            handleLeft.onmousedown = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                isDraggingLeft = true;
+                isDraggingRight = false;
+            };
+
+            handleRight.onmousedown = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                isDraggingRight = true;
+                isDraggingLeft = false;
+            };
+
+            handleLeft.ontouchstart = (e) => {
+                e.stopPropagation();
+                isDraggingLeft = true;
+                isDraggingRight = false;
+            };
+
+            handleRight.ontouchstart = (e) => {
+                e.stopPropagation();
+                isDraggingRight = true;
+                isDraggingLeft = false;
+            };
+
+            window.onmousemove = (e) => {
+                if (isDraggingLeft || isDraggingRight) onDrag(e.clientX);
+            };
+
+            window.ontouchmove = (e) => {
+                if ((isDraggingLeft || isDraggingRight) && e.touches.length > 0) {
+                    onDrag(e.touches[0].clientX);
+                }
+            };
+
+            window.onmouseup = onDragEnd;
+            window.ontouchend = onDragEnd;
+        }
+
+        function updateSliderHandlesUI() {
+            const handleLeft = document.getElementById('sliderHandleLeft');
+            const handleRight = document.getElementById('sliderHandleRight');
+            const highlight = document.getElementById('sliderHighlight');
+            
+            handleLeft.style.left = `${sliderLeftPercent}%`;
+            handleRight.style.left = `${sliderRightPercent}%`;
+            highlight.style.left = `${sliderLeftPercent}%`;
+            highlight.style.width = `${sliderRightPercent - sliderLeftPercent}%`;
+        }
+
+        // Main filter update triggered by slider
+        function updateChartsAndData(i_start, i_end) {
+            const N = allWeeklyDates.length;
+            const slicedLabels = allWeeklyLabels.slice(i_start, i_end + 1);
+            const slicedTotalData = totalWeeklyActivity.slice(i_start, i_end + 1);
+            
+            // 1. Update Date range description
+            const startDate = allWeeklyDates[i_start];
+            const endDate = allWeeklyDates[i_end];
+            const formatOpt = { day: 'numeric', month: 'short', year: 'numeric' };
+            document.getElementById('chartTimePeriod').innerText = `Weekly from ${startDate.toLocaleDateString('default', formatOpt)} to ${endDate.toLocaleDateString('default', formatOpt)}`;
+
+            // 2. Render/Update Main Chart.js bar graph
+            renderMainChart(slicedLabels, slicedTotalData);
+
+            // 3. Process filtered data per contributor
+            const filteredContributors = contributorsData.map(c => {
+                const slicedData = c.weeklyData.slice(i_start, i_end + 1);
+                const score = slicedData.reduce((a, b) => a + b, 0);
+                
+                // Additions represent relative productivity volume
+                const additions = score > 0 ? (score * 12 + Math.round(c.codeSeed / 5)) : 0;
+                // Deletions represent pending work proxy to balance the visual github aesthetic
+                const deletions = score > 0 ? Math.round(score * 1.5 + (c.codeSeed % 7)) : 0;
+
+                return {
+                    ...c,
+                    score: score,
+                    additions: additions,
+                    deletions: deletions,
+                    slicedData: slicedData
+                };
+            });
+
+            // Sort contributors by score descending
+            filteredContributors.sort((a, b) => b.score - a.score);
+
+            // 4. Render contributors listing with their mini sparklines
+            renderContributorCards(filteredContributors, slicedLabels);
+        }
+
+        // Render main Chart.js bar graph (Emerald Theme)
+        function renderMainChart(labels, data) {
+            const ctx = document.getElementById('mainContributionsChart').getContext('2d');
+            const metricType = document.getElementById('metricSelect').value;
+            
+            let metricLabel = 'Performance Score';
+            if (metricType === 'submissions') metricLabel = 'Submissions';
+            if (metricType === 'attendance') metricLabel = 'Attendance check-ins';
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: metricLabel,
+                        data: data,
+                        backgroundColor: '#059669', // Emerald Green
+                        hoverBackgroundColor: '#34d399',
+                        borderRadius: 4,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#1e293b',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${metricLabel}: ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#64748b', font: { weight: '600', size: 10 } }
+                        },
+                        y: {
+                            position: 'right',
+                            grid: { color: '#f1f5f9' },
+                            ticks: { 
+                                color: '#64748b', 
+                                font: { size: 10 } 
+                            },
+                            border: { dash: [4, 4] }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Render ranked member cards at the bottom
+        function renderContributorCards(contributors, labels) {
+            const grid = document.getElementById('contributorsGrid');
+            
+            // Clean up existing mini chart instances
+            Object.keys(miniCharts).forEach(key => {
+                if (miniCharts[key]) {
+                    miniCharts[key].destroy();
+                }
+            });
+            miniCharts = {};
+
+            grid.innerHTML = '';
+
+            if (contributors.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--analytics-text-dim);">No active contributors found.</div>`;
+                return;
+            }
+
+            const metricType = document.getElementById('metricSelect').value;
+            const unit = metricType === 'performance' ? 'pts performance' : 
+                         (metricType === 'submissions' ? 'work submissions' : 'attendance check-ins');
+
+            contributors.forEach((c, index) => {
+                const card = document.createElement('div');
+                card.className = 'glass contributor-card';
+                card.innerHTML = `
+                    <!-- Header -->
+                    <div class="contributor-header">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <img src="${c.avatar}" style="width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--analytics-border);">
+                            <div style="text-align: left;">
+                                <div style="font-weight: 700; color: var(--analytics-primary); font-size: 0.95rem;">${c.username}</div>
+                                <div style="font-size: 0.75rem; color: var(--analytics-text-dim); font-weight: 500;">
+                                    ${c.score} ${unit} 
+                                    ${c.score > 0 ? `
+                                        <span class="stat-additions">${c.additions.toLocaleString()} ++</span> 
+                                        <span class="stat-deletions">${c.deletions.toLocaleString()} --</span>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="contributor-rank-badge">#${index + 1}</span>
+                            <div style="color: var(--analytics-text-dim); cursor: pointer; font-size: 0.85rem; display: flex; gap: 0.5rem;">
+                                <i class="fas fa-ellipsis-h" title="More Options"></i>
+                                <i class="fas fa-cog" title="Settings"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sparkline Mini Chart Canvas -->
+                    <div style="position: relative; height: 110px; width: 100%; background: var(--analytics-bg-sparkline); border-radius: 8px; border: 1px solid var(--analytics-border); padding: 0.75rem;">
+                        <canvas id="miniChart_${c.id}"></canvas>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+
+                // Render the mini chart on next tick when canvas is mounted
+                setTimeout(() => {
+                    renderMiniChart(c.id, labels, c.slicedData);
+                }, 0);
+            });
+        }
+
+        // Render the small weekly bar chart on the member cards (Emerald Green theme)
+        function renderMiniChart(memberId, labels, data) {
+            const canvas = document.getElementById(`miniChart_${memberId}`);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            miniCharts[memberId] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: '#059669', // Emerald
+                        hoverBackgroundColor: '#34d399',
+                        borderRadius: 3,
+                        barPercentage: 0.65
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { 
+                                color: '#64748b', 
+                                font: { size: 8, weight: '600' },
+                                maxTicksLimit: 3
+                            }
+                        },
+                        y: {
+                            position: 'right',
+                            grid: { color: '#f1f5f9' },
+                            ticks: { 
+                                color: '#64748b', 
+                                font: { size: 8 },
+                                maxTicksLimit: 2
+                            },
+                            border: { dash: [2, 2] }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Event Handlers ---
+        document.getElementById('metricSelect').addEventListener('change', loadAnalytics);
+        document.getElementById('periodSelect').addEventListener('change', loadAnalytics);
+
+        loadAnalytics();
+    </script>
+</body>
+
+</html>
