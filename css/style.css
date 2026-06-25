@@ -929,4 +929,100 @@ h3 { font-size: 1.25rem; font-weight: 700; }
 .meeting-invite-btn:hover {
     background: var(--primary-hover);
     transform: translateY(-1px);
-}
+}
+
+/* ==========================================================================
+   Responsive Refinements for Mobile Screens
+   ========================================================================== */
+
+/* Slider handle hit target enlargement for touch */
+.slider-handle {
+    position: absolute;
+    cursor: ew-resize;
+}
+.slider-handle::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -15px;
+    right: -15px;
+    bottom: -10px;
+    cursor: ew-resize;
+}
+
+/* General Layout adjustments for mobile down to 320px */
+@media (max-width: 768px) {
+    /* Fullscreen video call modal on mobile */
+    .video-call-modal {
+        padding: 0 !important;
+    }
+    .video-call-content {
+        max-height: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+        border: none !important;
+    }
+    .video-call-content.minimized {
+        bottom: 85px !important; /* clear bottom mobile nav bar height */
+        right: 10px !important;
+        left: 10px !important;
+        width: calc(100% - 20px) !important;
+        height: 180px !important;
+    }
+
+    /* Mobile Drawer Sidebar for Chat */
+    .chat-sidebar {
+        position: fixed !important;
+        left: -290px;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: 1500;
+        background: white;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: var(--shadow-lg);
+        display: flex !important; /* override hide */
+    }
+    
+    .chat-sidebar.active {
+        left: 0;
+    }
+
+    /* Backdrop for chat sidebar drawer */
+    .chat-sidebar-backdrop {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(15, 23, 42, 0.4);
+        z-index: 1400;
+        display: none;
+    }
+    
+    .chat-sidebar-backdrop.active {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Grid collapse fallback for custom inline style grid configurations */
+    .responsive-grid, 
+    [style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Padding offsets for mobile comfort */
+    .main-content {
+        padding: 0.75rem 0.75rem 6.5rem !important;
+    }
+    
+    /* Shrink the size of range slider labels for tiny devices */
+    .timeline-slider-labels span {
+        font-size: 0.65rem;
+    }
+    
+    /* Chat message size adjustments */
+    .message-bubble {
+        max-width: 90% !important;
+    }
+}
+

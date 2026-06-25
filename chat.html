@@ -92,17 +92,22 @@
             <div class="chat-main">
                 <!-- Chat Header -->
                 <div class="chat-header">
-                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        <div style="width: 42px; height: 42px; background: #ecfdf5; color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; overflow: hidden;">
+                        <!-- Mobile Chat Sidebar Drawer Toggle -->
+                        <button class="btn hide-desktop" id="chatSidebarToggle" style="padding: 0.5rem 0.75rem; background: #f1f5f9; border-radius: 8px; color: #64748b; margin-right: 0.25rem;" title="View Team Directory">
+                            <i class="fas fa-users"></i>
+                        </button>
+                        
+                        <div style="width: 42px; height: 42px; background: #ecfdf5; color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
                             <i class="fas fa-comments"></i>
                         </div>
-                        <div>
-                            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800;" id="chatHeaderTitle">Team Channel</h3>
-                            <span class="text-dim" style="font-size: 0.75rem; font-weight: 600;" id="chatHeaderSub">Real-time collaboration channel</span>
+                        <div style="overflow: hidden;">
+                            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="chatHeaderTitle">Team Channel</h3>
+                            <span class="text-dim" style="font-size: 0.75rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;" id="chatHeaderSub">Real-time collaboration channel</span>
                         </div>
                     </div>
                     
-                    <div style="display: flex; align-items: center;">
+                    <div style="display: flex; align-items: center; flex-shrink: 0;">
                         <!-- Video Call Trigger Button -->
                         <button class="chat-call-btn" id="startCallBtn" title="Start Private Video Call">
                             <i class="fas fa-video"></i>
@@ -148,6 +153,9 @@
             </div>
         </div>
     </main>
+
+    <!-- Chat Sidebar mobile backdrop -->
+    <div class="chat-sidebar-backdrop" id="chatSidebarBackdrop"></div>
 
     <!-- Video Call Overlay Modal -->
     <div class="video-call-modal" id="videoCallModal">
@@ -415,6 +423,22 @@
                 input.focus();
             }
         });
+
+        // Mobile Sidebar Drawer Toggle Handlers
+        const sidebarToggle = document.getElementById('chatSidebarToggle');
+        const chatSidebar = document.querySelector('.chat-sidebar');
+        const sidebarBackdrop = document.getElementById('chatSidebarBackdrop');
+
+        if (sidebarToggle && chatSidebar && sidebarBackdrop) {
+            sidebarToggle.addEventListener('click', () => {
+                chatSidebar.classList.add('active');
+                sidebarBackdrop.classList.add('active');
+            });
+            sidebarBackdrop.addEventListener('click', () => {
+                chatSidebar.classList.remove('active');
+                sidebarBackdrop.classList.remove('active');
+            });
+        }
 
         initChat();
     </script>

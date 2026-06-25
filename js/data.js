@@ -234,6 +234,63 @@ export async function getAllAttendance() {
     return querySnapshot.docs.map(doc => doc.data());
 }
 
+export async function markAttendanceForDate(userId, date, status = 'Present') {
+    const attendanceId = `${userId}_${date}`;
+    const attendanceRef = doc(db, COLLECTIONS.ATTENDANCE, attendanceId);
+    
+    const snap = await getDoc(attendanceRef);
+    if (snap.exists()) return false;
+    
+    await setDoc(attendanceRef, {
+        userId,
+        date,
+        time: new Date().toLocaleTimeString(),
+        status
+    });
+
+    // Update streak if marking for today
+    const today = new Date().toISOString().split('T')[0];
+    if (date === today) {
+        const userRef = doc(db, COLLECTIONS.USERS, userId);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+            const userData = userSnap.data();
+            const newStreak = (userData.streak || 0) + 1;
+            await updateDoc(userRef, {
+                streak: newStreak,
+                longestStreak: Math.max(newStreak, userData.longestStreak || 0),
+                lastActive: today
+            });
+        }
+    }
+    return true;
+}
+
+export async function removeAttendanceForDate(userId, date) {
+    const attendanceId = `${userId}_${date}`;
+    const attendanceRef = doc(db, COLLECTIONS.ATTENDANCE, attendanceId);
+    
+    const snap = await getDoc(attendanceRef);
+    if (!snap.exists()) return false;
+    
+    await deleteDoc(attendanceRef);
+
+    // Update streak if removing for today
+    const today = new Date().toISOString().split('T')[0];
+    if (date === today) {
+        const userRef = doc(db, COLLECTIONS.USERS, userId);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+            const userData = userSnap.data();
+            const newStreak = Math.max(0, (userData.streak || 0) - 1);
+            await updateDoc(userRef, {
+                streak: newStreak
+            });
+        }
+    }
+    return true;
+}
+
 // --- Auth Utilities ---
 export function setCurrentUser(user) {
     localStorage.setItem('teamSync_user', JSON.stringify(user));

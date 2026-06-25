@@ -30,6 +30,10 @@
             transition: all 0.2s;
         }
 
+        .calendar-day-spacer {
+            aspect-ratio: 1;
+        }
+
         .calendar-day.present {
             background: #ecfdf5;
             color: #059669;
@@ -65,6 +69,87 @@
             box-shadow: var(--shadow-sm);
         }
 
+        /* Active Months Styles */
+        .active-month-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.85rem 1.25rem;
+            border-radius: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            color: var(--text-dim);
+        }
+
+        .active-month-item:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+            border-color: #cbd5e1;
+        }
+
+        .active-month-item.active {
+            background: #ecfdf5;
+            color: #047857;
+            border-color: #a7f3d0;
+        }
+
+        .active-month-item .badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 100px;
+            background: #e2e8f0;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        .active-month-item.active .badge {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .active-month-item.has-attendance:not(.active) {
+            border-color: #34d399;
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .active-month-item.has-attendance:not(.active) .badge {
+            background: #d1fae5;
+            color: #16a34a;
+        }
+
+        /* Interactive Calendar Day Styles */
+        .calendar-day.clickable {
+            cursor: pointer;
+        }
+
+        .calendar-day.clickable:hover {
+            background: #f1f5f9;
+            border-color: var(--primary-light);
+            transform: scale(1.05);
+            z-index: 2;
+        }
+        
+        .calendar-day.clickable.present:hover {
+            background: #fee2e2;
+            color: #ef4444;
+            border-color: #fca5a5;
+        }
+        
+        .calendar-day.clickable.present:hover::after {
+            background: #ef4444;
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 8px rgba(5, 150, 105, 0.2);
+            color: var(--primary);
+            font-weight: 800;
+        }
+
         @media (max-width: 768px) {
             .calendar-grid {
                 gap: 0.4rem;
@@ -84,7 +169,6 @@
             }
         }
     </style>
-    </style>
 </head>
 
 <body>
@@ -94,47 +178,78 @@
                 <h1>Daily Attendance</h1>
                 <p class="text-dim">Stay consistent to maintain your streak.</p>
             </div>
-            <button class="btn btn-primary" id="attendanceBtn" onclick="handleMarkAttendance()">
-                <i class="fas fa-fingerprint"></i> Mark Attendance
-            </button>
+            <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <!-- Admin Member Selector Dropdown -->
+                <div id="adminMemberSelectorContainer" style="display: none; min-width: 220px;">
+                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.25rem;">Viewing Member</div>
+                    <select id="adminMemberSelect" style="width: 100%; padding: 0.6rem 1.2rem; background: white; border: 1.5px solid var(--glass-border); border-radius: 12px; font-weight: 700; color: var(--text-main); outline: none; cursor: pointer;">
+                        <!-- Options loaded dynamically -->
+                    </select>
+                </div>
+                <button class="btn btn-primary" id="attendanceBtn" onclick="handleMarkAttendance()">
+                    <i class="fas fa-fingerprint"></i> Mark Attendance
+                </button>
+            </div>
         </header>
 
         <div class="responsive-grid" style="grid-template-columns: 1fr 2fr; gap: 2rem;">
-            <div class="streak-card">
-                <div
-                    style="width: 80px; height: 80px; background: #fffbeb; border-radius: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-                    <i class="fas fa-fire" style="color: #f59e0b; font-size: 2.5rem;"></i>
-                </div>
-                <h2 id="streakCount" style="font-size: 2.5rem; margin: 0; color: var(--text-main);">0 Days</h2>
-                <div
-                    style="font-weight: 700; color: #f59e0b; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; margin-top: 0.5rem;">
-                    Current Achievement</div>
-
-                <div
-                    style="margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600; color: var(--text-dim); font-size: 0.9rem;">Record Streak</span>
-                        <span id="longestStreak" style="font-weight: 800; color: var(--text-main);">0 Days</span>
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <!-- Streak Card -->
+                <div class="streak-card">
+                    <div
+                        style="width: 80px; height: 80px; background: #fffbeb; border-radius: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                        <i class="fas fa-fire" style="color: #f59e0b; font-size: 2.5rem;"></i>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600; color: var(--text-dim); font-size: 0.9rem;">Last Checked
-                            In</span>
-                        <span id="lastActive" style="font-weight: 800; color: var(--text-main);">Never</span>
+                    <h2 id="streakCount" style="font-size: 2.5rem; margin: 0; color: var(--text-main);">0 Days</h2>
+                    <div
+                        style="font-weight: 700; color: #f59e0b; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; margin-top: 0.5rem;">
+                        Current Achievement</div>
+
+                    <div
+                        style="margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: 600; color: var(--text-dim); font-size: 0.9rem;">Record Streak</span>
+                            <span id="longestStreak" style="font-weight: 800; color: var(--text-main);">0 Days</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: 600; color: var(--text-dim); font-size: 0.9rem;">Last Checked In</span>
+                            <span id="lastActive" style="font-weight: 800; color: var(--text-main);">Never</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Months Card -->
+                <div class="glass" style="padding: 2rem; display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="responsive-flex" style="margin-bottom: 0.5rem; justify-content: space-between; align-items: center; display: flex; flex-direction: row; gap: 1rem;">
+                        <h3 style="margin: 0; font-size: 1.15rem; color: var(--text-main); font-weight: 800;">Active Months</h3>
+                        <select id="yearSelect" style="padding: 0.4rem 0.8rem; border-radius: 8px; border: 1.5px solid var(--glass-border); font-size: 0.85rem; font-weight: 700; color: var(--text-dim); background: #f8fafc; outline: none; cursor: pointer;">
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026" selected>2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                        </select>
+                    </div>
+                    <div id="activeMonthsList" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 380px; overflow-y: auto; padding-right: 0.25rem;">
+                        <!-- Dynamically populated -->
                     </div>
                 </div>
             </div>
 
+            <!-- Calendar Card -->
             <div class="glass" style="padding: 2.5rem; overflow-x: auto;">
                 <div class="responsive-flex" style="margin-bottom: 2rem;">
-                    <h2 style="margin: 0; font-size: 1.5rem;">February 2026</h2>
+                    <h2 id="calendarTitle" style="margin: 0; font-size: 1.5rem;">February 2026</h2>
                     <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn" style="padding: 0.5rem; border-radius: 8px; background: #f1f5f9;"><i
-                                class="fas fa-chevron-left"></i></button>
-                        <button class="btn" style="padding: 0.5rem; border-radius: 8px; background: #f1f5f9;"><i
-                                class="fas fa-chevron-right"></i></button>
+                        <button class="btn" style="padding: 0.5rem; border-radius: 8px; background: #f1f5f9;" onclick="navigateMonth(-1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn" style="padding: 0.5rem; border-radius: 8px; background: #f1f5f9;" onclick="navigateMonth(1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="calendar-grid">
+                <div class="calendar-grid" id="calendarGrid">
                     <div class="calendar-header">Sun</div>
                     <div class="calendar-header">Mon</div>
                     <div class="calendar-header">Tue</div>
@@ -142,25 +257,10 @@
                     <div class="calendar-header">Thu</div>
                     <div class="calendar-header">Fri</div>
                     <div class="calendar-header">Sat</div>
-                    <!-- Days -->
-                    <div class="calendar-day" style="grid-column: 1;">1</div>
-                    <div class="calendar-day">2</div>
-                    <div class="calendar-day">3</div>
-                    <div class="calendar-day" id="day-4">4</div>
-                    <div class="calendar-day">5</div>
-                    <div class="calendar-day">6</div>
-                    <div class="calendar-day">7</div>
-                    <div class="calendar-day">8</div>
-                    <div class="calendar-day">9</div>
-                    <div class="calendar-day">10</div>
-                    <div class="calendar-day">11</div>
-                    <div class="calendar-day">12</div>
-                    <div class="calendar-day">13</div>
-                    <div class="calendar-day">14</div>
+                    <!-- Dynamically populated -->
                 </div>
-                <div
-                    style="margin-top: 2rem; padding: 1rem 1.5rem; background: #f8fafc; border-radius: 12px; border-left: 4px solid var(--primary);">
-                    <p style="margin: 0; font-size: 0.85rem; color: #475569; font-weight: 600;">
+                <div style="margin-top: 2rem; padding: 1rem 1.5rem; background: #f8fafc; border-radius: 12px; border-left: 4px solid var(--primary);">
+                    <p id="calendarTip" style="margin: 0; font-size: 0.85rem; color: #475569; font-weight: 600;">
                         <i class="fas fa-info-circle" style="color: var(--primary); margin-right: 0.5rem;"></i>
                         System consistency requires daily registration of activity.
                     </p>
@@ -170,55 +270,274 @@
     </main>
 
     <script type="module">
-        import { getAttendance, markAttendance, getCurrentUser, getUser } from './js/data.js';
+        import { getAttendance, markAttendance, getCurrentUser, getUser, markAttendanceForDate, removeAttendanceForDate, getTeamMembers } from './js/data.js';
         import { initSidebar } from './js/sidebar.js';
 
         document.addEventListener('DOMContentLoaded', initSidebar);
 
+        const MONTH_NAMES = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
         const currentUser = getCurrentUser();
-
-        async function updateUI() {
-            try {
-                // Fetch fresh user data for streaks
-                const u = await getUser(currentUser.id);
-                if (!u) return;
-
-                document.getElementById('streakCount').innerText = `${u.streak || 0} Days`;
-                document.getElementById('longestStreak').innerText = `${u.longestStreak || 0} Days`;
-                document.getElementById('lastActive').innerText = u.lastActive || 'Never';
-
-                const records = await getAttendance(u.id);
-                records.forEach(r => {
-                    const day = r.date.split('-')[2];
-                    const dayEl = document.getElementById(`day-${parseInt(day)}`);
-                    if (dayEl) dayEl.classList.add('present');
-                });
-
-                // If already marked today
-                const today = new Date().toISOString().split('T')[0];
-                if (records.find(r => r.date === today)) {
-                    const btn = document.getElementById('attendanceBtn');
-                    btn.disabled = true;
-                    btn.innerText = 'Attendance Marked';
-                    btn.style.opacity = '0.5';
-                }
-            } catch (err) {
-                console.error("Error updating attendance UI:", err);
-            }
+        if (!currentUser) {
+            window.location.href = 'index.html';
         }
+
+        const isAdmin = currentUser.role === 'admin';
+        
+        // Active calendar states
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth();
+        let viewedUser = currentUser;
+        let attendanceRecords = [];
+
+        // Global functions for inline HTML event handlers
+        window.navigateMonth = (dir) => {
+            currentMonth += dir;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear -= 1;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear += 1;
+            }
+            
+            const yearSelect = document.getElementById('yearSelect');
+            if (yearSelect) yearSelect.value = currentYear;
+            
+            renderCalendar(currentYear, currentMonth);
+            renderActiveMonths();
+        };
 
         window.handleMarkAttendance = async () => {
             try {
-                const success = await markAttendance(currentUser.id);
+                const today = new Date().toISOString().split('T')[0];
+                const success = await markAttendanceForDate(viewedUser.id, today);
                 if (success) {
-                    await updateUI();
+                    await reloadDataAndUI();
+                } else {
+                    alert('Attendance is already marked for today.');
                 }
             } catch (err) {
                 console.error("Error marking attendance:", err);
             }
         };
 
-        updateUI();
+        async function handleDayClick(dateString) {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const isToday = (dateString === today);
+
+                if (!isAdmin && !isToday) {
+                    return; // Regular members can only toggle today
+                }
+
+                const hasAttendance = attendanceRecords.find(r => r.date === dateString);
+
+                if (hasAttendance) {
+                    let confirmMessage = `Remove attendance check-in for ${dateString}?`;
+                    if (viewedUser.id !== currentUser.id) {
+                        confirmMessage = `Remove attendance record for ${viewedUser.name} on ${dateString}?`;
+                    }
+                    if (confirm(confirmMessage)) {
+                        const success = await removeAttendanceForDate(viewedUser.id, dateString);
+                        if (success) {
+                            await reloadDataAndUI();
+                        }
+                    }
+                } else {
+                    let confirmMessage = `Mark attendance present for ${dateString}?`;
+                    if (viewedUser.id !== currentUser.id) {
+                        confirmMessage = `Mark ${viewedUser.name} present on ${dateString}?`;
+                    }
+                    if (isToday || confirm(confirmMessage)) {
+                        const success = await markAttendanceForDate(viewedUser.id, dateString);
+                        if (success) {
+                            await reloadDataAndUI();
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Error toggling date attendance:", err);
+            }
+        }
+
+        function renderCalendar(year, month) {
+            const calendarGrid = document.getElementById('calendarGrid');
+            
+            // Clear existing day cells and spacers
+            const days = calendarGrid.querySelectorAll('.calendar-day, .calendar-day-spacer');
+            days.forEach(d => d.remove());
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+
+            const now = new Date();
+            const isCurrentMonthYear = (now.getFullYear() === year && now.getMonth() === month);
+            const todayDate = now.getDate();
+
+            // Render empty space elements for offset
+            for (let i = 0; i < firstDayIndex; i++) {
+                const spacer = document.createElement('div');
+                spacer.className = 'calendar-day-spacer';
+                calendarGrid.appendChild(spacer);
+            }
+
+            // Render days
+            for (let day = 1; day <= totalDays; day++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                dayEl.innerText = day;
+
+                const dateString = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                dayEl.dataset.date = dateString;
+
+                if (isCurrentMonthYear && day === todayDate) {
+                    dayEl.classList.add('today');
+                }
+
+                const hasAttendance = attendanceRecords.find(r => r.date === dateString);
+                if (hasAttendance) {
+                    dayEl.classList.add('present');
+                    dayEl.title = `Present - Checked in at ${hasAttendance.time || 'N/A'}`;
+                }
+
+                const isToday = (isCurrentMonthYear && day === todayDate);
+                if (isAdmin || isToday) {
+                    dayEl.classList.add('clickable');
+                    dayEl.onclick = () => handleDayClick(dateString);
+                }
+
+                calendarGrid.appendChild(dayEl);
+            }
+
+            document.getElementById('calendarTitle').innerText = `${MONTH_NAMES[month]} ${year}`;
+            
+            // Update UI tip
+            const tipEl = document.getElementById('calendarTip');
+            if (isAdmin && viewedUser.id !== currentUser.id) {
+                tipEl.innerHTML = `<i class="fas fa-edit" style="color: var(--primary); margin-right: 0.5rem;"></i> You can click on any calendar cell to toggle ${viewedUser.name}'s attendance status.`;
+            } else {
+                tipEl.innerHTML = `<i class="fas fa-info-circle" style="color: var(--primary); margin-right: 0.5rem;"></i> Click on today's date in the calendar or the "Mark Attendance" button to check in.`;
+            }
+        }
+
+        function renderActiveMonths() {
+            const list = document.getElementById('activeMonthsList');
+            list.innerHTML = '';
+
+            MONTH_NAMES.forEach((monthName, index) => {
+                const totalDaysInMonth = new Date(currentYear, index + 1, 0).getDate();
+                const count = attendanceRecords.filter(r => {
+                    const parts = r.date.split('-');
+                    return parseInt(parts[0]) === currentYear && parseInt(parts[1]) === (index + 1);
+                }).length;
+
+                const isCurrentActive = (currentMonth === index);
+                const hasAttendance = (count > 0);
+
+                const item = document.createElement('div');
+                item.className = `active-month-item ${isCurrentActive ? 'active' : ''} ${hasAttendance ? 'has-attendance' : ''}`;
+                item.onclick = () => {
+                    currentMonth = index;
+                    renderCalendar(currentYear, currentMonth);
+                    renderActiveMonths();
+                };
+
+                item.innerHTML = `
+                    <span>${monthName}</span>
+                    <span class="badge">${count}/${totalDaysInMonth} Days</span>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        async function reloadDataAndUI() {
+            try {
+                // Fetch viewed user details
+                const u = await getUser(viewedUser.id);
+                if (!u) return;
+                viewedUser = u;
+
+                // Update Streak Card stats
+                document.getElementById('streakCount').innerText = `${u.streak || 0} Days`;
+                document.getElementById('longestStreak').innerText = `${u.longestStreak || 0} Days`;
+                document.getElementById('lastActive').innerText = u.lastActive || 'Never';
+
+                // Fetch attendance records
+                attendanceRecords = await getAttendance(u.id);
+
+                // Render dynamic views
+                renderCalendar(currentYear, currentMonth);
+                renderActiveMonths();
+
+                // Update "Mark Attendance" Button State
+                const today = new Date().toISOString().split('T')[0];
+                const btn = document.getElementById('attendanceBtn');
+                
+                // Show member selection if Admin
+                if (isAdmin) {
+                    document.getElementById('adminMemberSelectorContainer').style.display = 'block';
+                }
+
+                if (attendanceRecords.find(r => r.date === today)) {
+                    btn.disabled = true;
+                    btn.innerText = 'Attendance Marked';
+                    btn.style.opacity = '0.5';
+                    btn.style.pointerEvents = 'none';
+                } else {
+                    btn.disabled = false;
+                    btn.innerText = 'Mark Attendance';
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                }
+            } catch (err) {
+                console.error("Error reloading UI:", err);
+            }
+        }
+
+        // Setup year selector change listener
+        document.getElementById('yearSelect').addEventListener('change', (e) => {
+            currentYear = parseInt(e.target.value);
+            renderCalendar(currentYear, currentMonth);
+            renderActiveMonths();
+        });
+
+        // Initialize admin selectors and load default user content
+        async function init() {
+            try {
+                if (isAdmin) {
+                    const members = await getTeamMembers(currentUser.teamId);
+                    if (members.length > 0) {
+                        const selectEl = document.getElementById('adminMemberSelect');
+                        const containerEl = document.getElementById('adminMemberSelectorContainer');
+                        containerEl.style.display = 'block';
+                        selectEl.innerHTML = members.map(m => `
+                            <option value="${m.id}" ${m.id === currentUser.id ? 'selected' : ''}>
+                                ${m.name} (${m.role})
+                            </option>
+                        `).join('');
+
+                        selectEl.addEventListener('change', async (e) => {
+                            const selectedId = e.target.value;
+                            const u = members.find(member => member.id === selectedId);
+                            if (u) {
+                                viewedUser = u;
+                                await reloadDataAndUI();
+                            }
+                        });
+                    }
+                }
+                
+                await reloadDataAndUI();
+            } catch (err) {
+                console.error("Error during initialization:", err);
+            }
+        }
+
+        init();
     </script>
 </body>
 
