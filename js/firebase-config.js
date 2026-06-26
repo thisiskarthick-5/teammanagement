@@ -19,4 +19,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Groq AI Assistant Configuration
+// REPLACE WITH YOUR GROQ API KEY
+export const GROQ_API_KEY = "YOUR_GROQ_API_KEY_HERE";
+export const GROQ_MODEL = "llama-3.3-70b-versatile";
+
 export { auth, db };

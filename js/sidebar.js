@@ -1,4 +1,5 @@
 import { getCurrentUser, logout } from './data.js';
+import { initSmartAssistant } from './smart-assistant.js';
 
 export function initSidebar() {
     const user = getCurrentUser();
@@ -123,6 +124,9 @@ export function initSidebar() {
         `;
         document.body.insertAdjacentHTML('beforeend', guardHTML);
     }
+
+    // Initialize Global Smart AI Assistant Chat
+    initSmartAssistant();
 }
 
 document.addEventListener('DOMContentLoaded', initSidebar);

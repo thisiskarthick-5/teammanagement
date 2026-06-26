@@ -125,10 +125,15 @@
                 </div>
 
                 <!-- Composer Input -->
-                <div class="chat-input-container">
-                    <button class="emoji-picker-btn" id="emojiToggle" title="Add Emoji">
-                        <i class="far fa-smile"></i>
-                    </button>
+                <div class="chat-input-container" style="position: relative;">
+                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                        <button class="emoji-picker-btn" id="emojiToggle" title="Add Emoji">
+                            <i class="far fa-smile"></i>
+                        </button>
+                        <button class="emoji-picker-btn" id="aiToggle" title="AI Writing Assistant" style="color: var(--primary);">
+                            <i class="fas fa-wand-magic-spark"></i>
+                        </button>
+                    </div>
                     <!-- Popover emoji list -->
                     <div class="emoji-popover" id="emojiPopover" style="display: none;">
                         <span class="emoji-item">😀</span>
@@ -142,6 +147,9 @@
                         <span class="emoji-item">👏</span>
                         <span class="emoji-item">💯</span>
                     </div>
+
+                    <!-- Popover AI panel -->
+                    <div class="ai-popover" id="aiPopover" style="display: none;"></div>
 
                     <form id="chatForm" class="chat-input-form">
                         <input type="text" id="chatInputText" class="chat-input" placeholder="Type a message..." required autocomplete="off">
@@ -185,8 +193,12 @@
     <script type="module">
         import { sendChatMessage, subscribeToChatMessages, getTeamDetails, getTeamMembers, getCurrentUser } from './js/data.js';
         import { initSidebar } from './js/sidebar.js';
+        import { initAIHelper } from './js/ai-helper.js';
 
-        document.addEventListener('DOMContentLoaded', initSidebar);
+        document.addEventListener('DOMContentLoaded', () => {
+            initSidebar();
+            initAIHelper();
+        });
 
         const currentUser = getCurrentUser();
         let jitsiAPI = null;
