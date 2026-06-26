@@ -24,4 +24,9 @@ const db = getFirestore(app);
 export const GROQ_API_KEY = "YOUR_GROQ_API_KEY_HERE";
 export const GROQ_MODEL = "llama-3.3-70b-versatile";
 
+// EmailJS Configuration (Optional - for Email Notifications)
+export const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";
+export const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
+export const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY";
+
 export { auth, db };

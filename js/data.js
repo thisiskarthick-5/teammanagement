@@ -1,4 +1,5 @@
 import { db, auth } from './firebase-config.js';
+import { sendMail } from './mail-helper.js';
 import {
     collection,
     addDoc,
@@ -53,6 +54,24 @@ export async function createUser(userData) {
         userData.password = `ts-${randomPart}`;
     }
     await setDoc(doc(db, COLLECTIONS.USERS, userData.id), userData);
+
+    // Send mail notification to the new user with credentials
+    try {
+        if (userData.email) {
+            await sendMail({
+                toEmail: userData.email,
+                toName: userData.name,
+                subject: `Welcome to TEAMLINK! Your Account Credentials`,
+                bodyTitle: `Your profile has been created`,
+                bodyText: `Hello ${userData.name.split(' ')[0]},\n\nYour profile has been set up on TEAMLINK by your administrator.\n\nHere are your login credentials:\nUsername/Email: ${userData.email}\nPassword: ${userData.password}\n\nPlease keep these credentials secure.`,
+                actionUrl: 'index.html',
+                actionText: 'Sign In Now'
+            });
+        }
+    } catch (mailErr) {
+        console.error("Failed to send welcome mail notification:", mailErr);
+    }
+
     return userData;
 }
 
@@ -77,6 +96,27 @@ export async function createTask(taskData) {
         status: 'Not Started',
         createdAt: new Date().toISOString()
     });
+
+    // Send mail notification to assignee
+    try {
+        if (taskData.assignedTo) {
+            const assignee = await getUser(taskData.assignedTo);
+            if (assignee && assignee.email) {
+                await sendMail({
+                    toEmail: assignee.email,
+                    toName: assignee.name,
+                    subject: `New Task Assigned: ${taskData.title}`,
+                    bodyTitle: `You have been assigned a new task`,
+                    bodyText: `Hello ${assignee.name.split(' ')[0]},\n\nYou have been assigned a new task on TEAMLINK.\n\nTask: ${taskData.title}\nPriority: ${taskData.priority}\nDeadline: ${taskData.deadline}\n\nPlease check your tasks list in the app.`,
+                    actionUrl: 'tasks.html',
+                    actionText: 'View Tasks'
+                });
+            }
+        }
+    } catch (mailErr) {
+        console.error("Failed to send assignment mail notification:", mailErr);
+    }
+
     return { id: docRef.id, ...taskData, teamId: user ? user.teamId : null };
 }
 
@@ -145,6 +185,24 @@ export async function approveTask(taskId, userId) {
             longestStreak: Math.max(newStreak, userData.longestStreak || 0)
         });
     }
+
+    // Send mail notification to assignee
+    try {
+        const assignee = await getUser(userId);
+        if (assignee && assignee.email) {
+            await sendMail({
+                toEmail: assignee.email,
+                toName: assignee.name,
+                subject: `Task Approved: ${taskTitle}`,
+                bodyTitle: `Your task submission has been approved!`,
+                bodyText: `Hello ${assignee.name.split(' ')[0]},\n\nGreat job! Your submission for the task "${taskTitle}" has been verified and approved. Your activity streak has been updated.`,
+                actionUrl: `profile.html?id=${userId}`,
+                actionText: 'View Portfolio'
+            });
+        }
+    } catch (mailErr) {
+        console.error("Failed to send approval mail notification:", mailErr);
+    }
 }
 
 export async function rejectTask(taskId, userId, message) {
@@ -168,6 +226,24 @@ export async function rejectTask(taskId, userId, message) {
         createdAt: new Date().toISOString(),
         read: false
     });
+
+    // Send mail notification to assignee
+    try {
+        const assignee = await getUser(userId);
+        if (assignee && assignee.email) {
+            await sendMail({
+                toEmail: assignee.email,
+                toName: assignee.name,
+                subject: `Revision Required: ${taskTitle}`,
+                bodyTitle: `Revision requested for your task submission`,
+                bodyText: `Hello ${assignee.name.split(' ')[0]},\n\nThe reviewer has requested changes for the task "${taskTitle}".\n\nFeedback:\n"${message}"\n\nPlease revise your work and re-submit.`,
+                actionUrl: 'tasks.html',
+                actionText: 'View Tasks'
+            });
+        }
+    } catch (mailErr) {
+        console.error("Failed to send rejection mail notification:", mailErr);
+    }
 }
 
 // --- Notification Logic ---
