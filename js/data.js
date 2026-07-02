@@ -14,6 +14,13 @@ import {
     onSnapshot,
     deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import {
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut,
+    sendPasswordResetEmail,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const COLLECTIONS = {
     USERS: 'users',
@@ -36,48 +43,62 @@ export async function getAllUsers() {
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
-export async function createUser(userData) {
-    // Generate a TM-ID if not provided
-    if (!userData.id) {
-        const users = await getAllUsers();
-        userData.id = `TM-${(users.length + 1).toString().padStart(3, '0')}`;
-    }
-    // Generate a username if not provided
-    if (!userData.username) {
-        const nameClean = userData.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const randomNum = Math.floor(100 + Math.random() * 900);
-        userData.username = `${nameClean}${randomNum}`;
-    }
-    // Generate a password if not provided
-    if (!userData.password) {
-        const randomPart = Math.random().toString(36).substring(2, 8);
-        userData.password = `ts-${randomPart}`;
-    }
-    await setDoc(doc(db, COLLECTIONS.USERS, userData.id), userData);
-
-    // Send mail notification to the new user with credentials
-    try {
-        if (userData.email) {
-            await sendMail({
-                toEmail: userData.email,
-                toName: userData.name,
-                subject: `Welcome to TEAMLINK! Your Account Credentials`,
-                bodyTitle: `Your profile has been created`,
-                bodyText: `Hello ${userData.name.split(' ')[0]},\n\nYour profile has been set up on TEAMLINK by your administrator.\n\nHere are your login credentials:\nUsername/Email: ${userData.email}\nPassword: ${userData.password}\n\nPlease keep these credentials secure.`,
-                actionUrl: 'index.html',
-                actionText: 'Sign In Now'
-            });
+export async function createUser(userData, selfRegister = false) {
+    const currentUser = getCurrentUser();
+    
+    // If it's an admin provisioning a user, we save a temporary user in Firestore to be migrated on their first login.
+    if (currentUser && currentUser.role === 'admin' && !selfRegister) {
+        if (!userData.id) {
+            const users = await getAllUsers();
+            userData.id = `TM-${(users.length + 1).toString().padStart(3, '0')}`;
         }
-    } catch (mailErr) {
-        console.error("Failed to send welcome mail notification:", mailErr);
-    }
+        if (!userData.username) {
+            const nameClean = userData.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const randomNum = Math.floor(100 + Math.random() * 900);
+            userData.username = `${nameClean}${randomNum}`;
+        }
+        if (!userData.password) {
+            const randomPart = Math.random().toString(36).substring(2, 8);
+            userData.password = `ts-${randomPart}`;
+        }
+        userData.needsMigration = true;
+        await setDoc(doc(db, COLLECTIONS.USERS, userData.id), userData);
 
-    return userData;
+        // Send mail notification with temporary credentials
+        try {
+            if (userData.email) {
+                await sendMail({
+                    toEmail: userData.email,
+                    toName: userData.name,
+                    subject: `Welcome to TEAMLINK! Your Account Credentials`,
+                    bodyTitle: `Your profile has been created`,
+                    bodyText: `Hello ${userData.name.split(' ')[0]},\n\nYour profile has been set up on TEAMLINK by your administrator.\n\nHere are your login credentials:\nUsername: ${userData.username}\nTemporary Password: ${userData.password}\n\nPlease sign in to activate your account.`,
+                    actionUrl: 'index.html',
+                    actionText: 'Sign In Now'
+                });
+            }
+        } catch (mailErr) {
+            console.error("Failed to send welcome mail notification:", mailErr);
+        }
+        return userData;
+    } else {
+        // Self registration (or migrated account)
+        if (!userData.id) {
+            throw new Error("User UID must be provided for registered accounts.");
+        }
+        if (!userData.username) {
+            const nameClean = userData.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const randomNum = Math.floor(100 + Math.random() * 900);
+            userData.username = `${nameClean}${randomNum}`;
+        }
+        await setDoc(doc(db, COLLECTIONS.USERS, userData.id), userData);
+        return userData;
+    }
 }
 
 export async function updateUser(userId, userData) {
     const userRef = doc(db, COLLECTIONS.USERS, userId);
-    await updateDoc(userRef, userData);
+    await setDoc(userRef, userData, { merge: true });
 
     // Update local storage if it's the current user
     const currentUser = JSON.parse(localStorage.getItem('teamSync_user'));
@@ -376,10 +397,228 @@ export function getCurrentUser() {
     return JSON.parse(localStorage.getItem('teamSync_user'));
 }
 
-export function logout() {
+export async function logout() {
+    await signOut(auth);
     localStorage.removeItem('teamSync_user');
     window.location.href = 'index.html';
 }
+
+// Secure User Login with Username or Email and automatic migration
+export async function loginUser(usernameOrEmail, password) {
+    const cleanInput = usernameOrEmail.trim().toLowerCase();
+    
+    // Fetch all users to match username/email and handle migration
+    const allUsers = await getAllUsers();
+    let userDoc = allUsers.find(u => u.email?.toLowerCase() === cleanInput || u.username?.toLowerCase() === cleanInput);
+    
+    if (!userDoc) {
+        if (cleanInput.includes('@')) {
+            // Direct Firebase Auth login if email
+            const userCredential = await signInWithEmailAndPassword(auth, cleanInput, password);
+            const freshDoc = await getUser(userCredential.user.uid);
+            if (freshDoc) {
+                setCurrentUser(freshDoc);
+                return freshDoc;
+            }
+            // Create minimal doc if not exists in Firestore
+            const minimalUser = {
+                id: userCredential.user.uid,
+                email: cleanInput,
+                name: cleanInput.split('@')[0],
+                username: cleanInput.split('@')[0],
+                role: 'member',
+                streak: 0,
+                longestStreak: 0,
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(cleanInput)}`
+            };
+            await createUser(minimalUser, true);
+            setCurrentUser(minimalUser);
+            return minimalUser;
+        } else {
+            throw new Error("Invalid username or password.");
+        }
+    }
+
+    const email = userDoc.email;
+    const oldId = userDoc.id;
+
+    // Check if migration of plain text credentials is required
+    if (userDoc.password) {
+        if (userDoc.password === password) {
+            console.log(`Migrating user ${userDoc.username} to Firebase Auth...`);
+            let userCredential;
+            try {
+                userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            } catch (authErr) {
+                if (authErr.code === 'auth/email-already-in-use') {
+                    userCredential = await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    throw authErr;
+                }
+            }
+
+            const newUid = userCredential.user.uid;
+
+            if (oldId !== newUid) {
+                console.log(`Migrating Firestore document from ${oldId} to ${newUid}`);
+                const newUserData = { ...userDoc, id: newUid };
+                delete newUserData.password;
+                delete newUserData.needsMigration;
+                newUserData.authMigrated = true;
+
+                await setDoc(doc(db, COLLECTIONS.USERS, newUid), newUserData);
+                await runMigrationScript(oldId, newUid);
+                await deleteDoc(doc(db, COLLECTIONS.USERS, oldId));
+                userDoc = newUserData;
+            } else {
+                const newUserData = { ...userDoc };
+                delete newUserData.password;
+                delete newUserData.needsMigration;
+                newUserData.authMigrated = true;
+                await setDoc(doc(db, COLLECTIONS.USERS, newUid), newUserData);
+                userDoc = newUserData;
+            }
+
+            setCurrentUser(userDoc);
+            return userDoc;
+        } else {
+            throw new Error("Invalid username or password.");
+        }
+    }
+
+    // Standard Firebase Auth sign-in
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const freshUserDoc = await getUser(userCredential.user.uid);
+    if (!freshUserDoc) {
+        throw new Error("Login successful, but profile could not be loaded.");
+    }
+    setCurrentUser(freshUserDoc);
+    return freshUserDoc;
+}
+
+// User Registration wrapper
+export async function registerUser(name, email, username, password, role) {
+    const allUsers = await getAllUsers();
+    if (allUsers.find(u => u.username?.toLowerCase() === username.trim().toLowerCase())) {
+        throw new Error("Username is already taken.");
+    }
+    if (allUsers.find(u => u.email?.toLowerCase() === email.trim().toLowerCase())) {
+        throw new Error("Email is already registered.");
+    }
+
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
+
+    const newUser = {
+        id: uid,
+        name,
+        email,
+        username: username.trim().toLowerCase(),
+        role,
+        streak: 0,
+        longestStreak: 0,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`
+    };
+
+    await createUser(newUser, true);
+    setCurrentUser(newUser);
+    return newUser;
+}
+
+// Send password reset email
+export async function sendPasswordReset(email) {
+    await sendPasswordResetEmail(auth, email);
+}
+
+// Migration script to update all relations from old custom ID to Firebase UID
+async function runMigrationScript(oldId, newUid) {
+    console.log(`Running database migration: updating references from ${oldId} -> ${newUid}`);
+
+    // Update Tasks
+    try {
+        const querySnapshot = await getDocs(collection(db, COLLECTIONS.TASKS));
+        for (const docSnap of querySnapshot.docs) {
+            const taskData = docSnap.data();
+            if (taskData.assignedTo === oldId) {
+                await updateDoc(doc(db, COLLECTIONS.TASKS, docSnap.id), { assignedTo: newUid });
+            }
+        }
+    } catch (e) {
+        console.error("Migration error (Tasks):", e);
+    }
+
+    // Update Attendance
+    try {
+        const attQuery = query(collection(db, COLLECTIONS.ATTENDANCE), where('userId', '==', oldId));
+        const attSnap = await getDocs(attQuery);
+        for (const docSnap of attSnap.docs) {
+            const attData = docSnap.data();
+            const date = attData.date;
+            const newAttId = `${newUid}_${date}`;
+            await setDoc(doc(db, COLLECTIONS.ATTENDANCE, newAttId), {
+                ...attData,
+                userId: newUid
+            });
+            await deleteDoc(doc(db, COLLECTIONS.ATTENDANCE, docSnap.id));
+        }
+    } catch (e) {
+        console.error("Migration error (Attendance):", e);
+    }
+
+    // Update Notifications
+    try {
+        const notifQuery = query(collection(db, COLLECTIONS.NOTIFICATIONS), where('userId', '==', oldId));
+        const notifSnap = await getDocs(notifQuery);
+        for (const docSnap of notifSnap.docs) {
+            await updateDoc(doc(db, COLLECTIONS.NOTIFICATIONS, docSnap.id), { userId: newUid });
+        }
+    } catch (e) {
+        console.error("Migration error (Notifications):", e);
+    }
+
+    // Update Teams
+    try {
+        const teamsQuery = query(collection(db, 'teams'), where('createdBy', '==', oldId));
+        const teamsSnap = await getDocs(teamsQuery);
+        for (const docSnap of teamsSnap.docs) {
+            await updateDoc(doc(db, 'teams', docSnap.id), { createdBy: newUid });
+        }
+    } catch (e) {
+        console.error("Migration error (Teams):", e);
+    }
+}
+
+// Session Synchronization Hook
+onAuthStateChanged(auth, async (firebaseUser) => {
+    const path = window.location.pathname;
+    const isLoginPage = path.endsWith('index.html') || path.endsWith('/') || path === '';
+
+    if (firebaseUser) {
+        const localUser = getCurrentUser();
+        if (!localUser || localUser.id !== firebaseUser.uid) {
+            console.log("Synchronizing storage session with active Firebase Auth state...");
+            const freshUser = await getUser(firebaseUser.uid);
+            if (freshUser) {
+                setCurrentUser(freshUser);
+                if (isLoginPage) {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    window.dispatchEvent(new CustomEvent('userSynced'));
+                }
+            }
+        } else {
+            if (isLoginPage) {
+                window.location.href = 'dashboard.html';
+            }
+        }
+    } else {
+        if (!isLoginPage) {
+            console.log("No authenticated Firebase Auth session found. Ending local session...");
+            localStorage.removeItem('teamSync_user');
+            window.location.href = 'index.html';
+        }
+    }
+});
 
 // --- Team & Chat Logic ---
 
@@ -411,16 +650,15 @@ export async function createTeam(teamName) {
 
     await setDoc(teamRef, teamData);
 
-    const userRef = doc(db, COLLECTIONS.USERS, user.id);
-    await updateDoc(userRef, {
-        teamId: teamId,
-        teamName: teamName,
-        role: 'admin'
-    });
-
+    // Update local user object properties first
     user.teamId = teamId;
     user.teamName = teamName;
     user.role = 'admin';
+
+    const userRef = doc(db, COLLECTIONS.USERS, user.id);
+    // Use setDoc with merge: true so if the user profile document is missing in Firestore, it gets created with all details
+    await setDoc(userRef, user, { merge: true });
+
     setCurrentUser(user);
 
     return teamData;
@@ -440,16 +678,15 @@ export async function joinTeam(inviteCode) {
     const teamDoc = querySnapshot.docs[0];
     const teamData = teamDoc.data();
 
-    const userRef = doc(db, COLLECTIONS.USERS, user.id);
-    await updateDoc(userRef, {
-        teamId: teamData.id,
-        teamName: teamData.name,
-        role: 'member'
-    });
-
+    // Update local user object properties first
     user.teamId = teamData.id;
     user.teamName = teamData.name;
     user.role = 'member';
+
+    const userRef = doc(db, COLLECTIONS.USERS, user.id);
+    // Use setDoc with merge: true so if the user profile document is missing in Firestore, it gets created with all details
+    await setDoc(userRef, user, { merge: true });
+
     setCurrentUser(user);
 
     return teamData;
@@ -473,16 +710,15 @@ export async function leaveTeam() {
     const user = getCurrentUser();
     if (!user) return;
 
-    const userRef = doc(db, COLLECTIONS.USERS, user.id);
-    await updateDoc(userRef, {
-        teamId: null,
-        teamName: null,
-        role: 'member'
-    });
-
+    // Update local user object properties first
     user.teamId = null;
     user.teamName = null;
     user.role = 'member';
+
+    const userRef = doc(db, COLLECTIONS.USERS, user.id);
+    // Use setDoc with merge: true so if the user profile document is missing in Firestore, it gets created with all details
+    await setDoc(userRef, user, { merge: true });
+
     setCurrentUser(user);
 }
 

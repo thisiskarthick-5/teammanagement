@@ -13,16 +13,16 @@
     <style>
         :root {
             /* Theme color variables derived from style.css for analytics elements */
-            --analytics-primary: #059669; /* Emerald Green */
-            --analytics-primary-hover: #047857;
-            --analytics-primary-light: #34d399;
-            --analytics-bg-track: #f1f5f9;
-            --analytics-border: #e2e8f0;
-            --analytics-text-main: #0f172a;
-            --analytics-text-dim: #64748b;
+            --analytics-primary: #18181b; /* Charcoal */
+            --analytics-primary-hover: #27272a;
+            --analytics-primary-light: #e05e36; /* Rust Orange */
+            --analytics-bg-track: #f4efe9;
+            --analytics-border: rgba(24, 24, 27, 0.08);
+            --analytics-text-main: #18181b;
+            --analytics-text-dim: #71717a;
             --analytics-bg-card: #ffffff;
-            --analytics-bg-sparkline: #f8fafc;
-            --additions-color: #10b981; /* Green additions */
+            --analytics-bg-sparkline: #fdf5f2; /* Soft Peach */
+            --additions-color: #e05e36; /* Rust additions */
             --deletions-color: #ef4444; /* Red deletions */
         }
 
@@ -478,8 +478,8 @@
             ctx.closePath();
             
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, 'rgba(5, 150, 105, 0.25)'); // soft emerald transparency
-            gradient.addColorStop(1, 'rgba(5, 150, 105, 0.0)');
+            gradient.addColorStop(0, 'rgba(224, 94, 54, 0.25)'); // soft rust-orange transparency
+            gradient.addColorStop(1, 'rgba(224, 94, 54, 0.0)');
             ctx.fillStyle = gradient;
             ctx.fill();
             
@@ -491,7 +491,7 @@
                 if (i === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             }
-            ctx.strokeStyle = '#059669'; // Emerald stroke
+            ctx.strokeStyle = '#e05e36'; // Rust-orange stroke
             ctx.lineWidth = 1.5;
             ctx.stroke();
 
@@ -689,8 +689,8 @@
                     datasets: [{
                         label: metricLabel,
                         data: data,
-                        backgroundColor: '#059669', // Emerald Green
-                        hoverBackgroundColor: '#34d399',
+                        backgroundColor: '#e05e36', // Rust-orange
+                        hoverBackgroundColor: '#f97316',
                         borderRadius: 4,
                         barPercentage: 0.6
                     }]
@@ -812,8 +812,8 @@
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: '#059669', // Emerald
-                        hoverBackgroundColor: '#34d399',
+                        backgroundColor: '#e05e36', // Rust-orange
+                        hoverBackgroundColor: '#f97316',
                         borderRadius: 3,
                         barPercentage: 0.65
                     }]
