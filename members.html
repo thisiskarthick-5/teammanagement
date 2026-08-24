@@ -148,8 +148,12 @@
         async function renderMembers() {
             try {
                 const allUsers = await getAllUsers();
-                const users = allUsers.filter(u => u.teamId === currentUser.teamId);
+                const users = allUsers.filter(u => u.teamId === currentUser.teamId && u.role !== 'admin');
                 const list = document.getElementById('memberList');
+                if (users.length === 0) {
+                    list.innerHTML = `<tr><td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-dim);">No team members added yet</td></tr>`;
+                    return;
+                }
                 list.innerHTML = users.map(u => `
                     <tr class="animate-in">
                         <td><span class="id-badge">${u.id}</span></td>

@@ -24,58 +24,84 @@ export function initSidebar() {
     // --- Desktop Floating Sidebar ---
     const desktopNavHTML = `
         <div class="floating-sidebar hide-mobile">
-            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 3rem; padding: 0 0.5rem;">
-                <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
-                    <i class="fas fa-leaf" style="font-size: 1rem;"></i>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; padding: 0 0.5rem;">
+                <div style="width: 38px; height: 38px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
+                    <i class="fas fa-cubes" style="font-size: 1.1rem;"></i>
                 </div>
-                <span style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">TEAMSYNC</span>
+                <span style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">Tasko</span>
             </div>
             
-            <nav style="flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
+            <nav style="flex: 1; display: flex; flex-direction: column;">
+                <div class="nav-section-header">MENU</div>
+                
                 <a href="dashboard.html" class="nav-link ${path.includes('dashboard') ? 'active' : ''}">
-                    <i class="fas fa-th-large"></i> Dashboard
+                    <div class="nav-link-content">
+                        <i class="fas fa-border-all"></i>
+                        <span>Dashboard</span>
+                    </div>
                 </a>
-                <a href="analytics.html" class="nav-link ${path.includes('analytics') ? 'active' : ''}">
-                    <i class="fas fa-chart-line"></i> Analytics
-                </a>
-                <a href="chat.html" class="nav-link ${path.includes('chat') ? 'active' : ''}">
-                    <i class="fas fa-comments"></i> Team Chat
-                </a>
-                <a href="teams.html" class="nav-link ${path.includes('teams') ? 'active' : ''}">
-                    <i class="fas fa-users-gear"></i> My Team
-                </a>
+                
                 <a href="tasks.html" class="nav-link ${path.includes('tasks') ? 'active' : ''}">
-                    <i class="fas fa-tasks"></i> Tasks
+                    <div class="nav-link-content">
+                        <i class="fas fa-check-square"></i>
+                        <span>Tasks</span>
+                    </div>
+                    <span class="badge" id="sidebarTaskBadge" style="display: none;">0</span>
                 </a>
+                
                 <a href="attendance.html" class="nav-link ${path.includes('attendance') ? 'active' : ''}">
-                    <i class="fas fa-calendar-check"></i> Attendance
+                    <div class="nav-link-content">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>Calendar</span>
+                    </div>
                 </a>
-                ${user.role === 'member' ? `
-                <a href="notifications.html" class="nav-link ${path.includes('notifications') ? 'active' : ''}">
-                    <i class="fas fa-bell"></i> Notifications
+                
+                <a href="analytics.html" class="nav-link ${path.includes('analytics') ? 'active' : ''}">
+                    <div class="nav-link-content">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Analytics</span>
+                    </div>
                 </a>
-                ` : ''}
-                ${user.role === 'admin' ? `
-                <a href="members.html" class="nav-link ${path.includes('members') ? 'active' : ''}">
-                    <i class="fas fa-users"></i> Team Members
+                
+                <a href="teams.html" class="nav-link ${path.includes('teams') ? 'active' : ''}">
+                    <div class="nav-link-content">
+                        <i class="fas fa-user-friends"></i>
+                        <span>Team</span>
+                    </div>
                 </a>
-                ` : ''}
-                <a href="profile.html?id=${user.id}" class="nav-link ${path.includes('profile') ? 'active' : ''}">
-                    <i class="fas fa-user-circle"></i> Portfolio
+
+                <div class="nav-section-header">GENERAL</div>
+
+                <a href="${user.role === 'admin' ? 'members.html' : 'profile.html?id=' + user.id}" class="nav-link ${(path.includes('members') && user.role === 'admin') || (path.includes('profile') && user.role === 'member') ? 'active' : ''}">
+                    <div class="nav-link-content">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </div>
+                </a>
+                
+                <a href="help.html" class="nav-link ${path.includes('help') ? 'active' : ''}">
+                    <div class="nav-link-content">
+                        <i class="far fa-question-circle"></i>
+                        <span>Help</span>
+                    </div>
+                </a>
+
+                <a href="javascript:void(0)" onclick="logout()" class="nav-link">
+                    <div class="nav-link-content" style="color: #ef4444;">
+                        <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i>
+                        <span>Logout</span>
+                    </div>
                 </a>
             </nav>
 
-            <div style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.05);">
-                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding: 0 0.5rem;">
-                    <img src="${user.avatar}" style="width: 38px; height: 38px; border-radius: 12px; box-shadow: var(--shadow-sm);">
+            <div style="margin-top: auto; padding-top: 1.25rem; border-top: 1px solid var(--glass-border);">
+                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0 0.25rem;">
+                    <img src="${user.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'}" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent-light);">
                     <div style="overflow: hidden;">
-                        <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name.split(' ')[0]}</div>
-                        <div style="font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">${user.role}</div>
+                        <div style="font-size: 0.9rem; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name.split(' ')[0]}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: capitalize; font-weight: 600;">${user.role}</div>
                     </div>
                 </div>
-                <button onclick="logout()" class="btn" style="width: 100%; font-size: 0.8rem; padding: 0.6rem; background: #fee2e2; color: #ef4444; border-radius: 12px; font-weight: 800;">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
             </div>
         </div>
     `;
@@ -124,6 +150,23 @@ export function initSidebar() {
         `;
         document.body.insertAdjacentHTML('beforeend', guardHTML);
     }
+
+    // Dynamically update task badge count if available
+    try {
+        import('./data.js').then(async ({ getTasks }) => {
+            const tasks = await getTasks();
+            const userTasks = user.role === 'admin' ? tasks.filter(t => t.status !== 'Approved') : tasks.filter(t => t.assignedTo === user.id && t.status !== 'Approved');
+            const badge = document.getElementById('sidebarTaskBadge');
+            if (badge) {
+                if (userTasks.length > 0) {
+                    badge.innerText = userTasks.length;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }).catch(() => {});
+    } catch (e) {}
 
     // Initialize Global Smart AI Assistant Chat
     initSmartAssistant();

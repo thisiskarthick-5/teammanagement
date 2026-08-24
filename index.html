@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In | TEAMSYNC</title>
+    <title>Sign In | Tasko</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -39,7 +39,7 @@
             color: white;
             font-size: 1.75rem;
             margin: 0 auto 1.5rem;
-            box-shadow: 0 10px 20px rgba(24, 24, 27, 0.12);
+            box-shadow: 0 10px 20px rgba(6, 78, 59, 0.15);
         }
 
         h1 {
@@ -130,12 +130,12 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label>Username or Email</label>
-                    <input type="text" id="username" placeholder="Enter username or email" required value="admin">
+                    <input type="text" id="username" placeholder="Enter username or email" required>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 0.5rem;">
                     <label>Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required value="admin123">
+                    <input type="password" id="password" placeholder="Enter your password" required>
                 </div>
                 
                 <p style="text-align: right; margin-bottom: 1.5rem; font-size: 0.85rem;">
@@ -149,10 +149,6 @@
                     Get Started <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
                 </button>
             </form>
-
-            <div class="demo-badge">
-                <i class="fas fa-info-circle"></i> DEMO: Username <b>admin</b> | Password <b>admin123</b>
-            </div>
             
             <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
                 <a href="#" id="showRegister" style="color: var(--primary); font-weight: 600; text-decoration: none;">New member? Register here</a>
@@ -185,14 +181,6 @@
                         </div>
                         <span id="strengthText" style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim);">Password strength</span>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>System Role</label>
-                    <select id="regRole">
-                        <option value="member">Team Member</option>
-                        <option value="admin">Administrator / Lead</option>
-                    </select>
-                </div>
                 <div id="regErrorMsg" class="error-msg" style="text-align: center; margin-bottom: 1rem; color: #ef4444; font-weight: 600; display: none;"></div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">
                     Create Account <i class="fas fa-user-plus" style="margin-left: 0.5rem;"></i>
@@ -319,7 +307,7 @@
             const email = document.getElementById('regEmail').value.trim();
             const username = document.getElementById('regUsername').value.trim().toLowerCase();
             const password = document.getElementById('regPassword').value;
-            const role = document.getElementById('regRole').value;
+            const role = 'member';
             const errorMsg = document.getElementById('regErrorMsg');
             const submitBtn = e.target.querySelector('button[type="submit"]');
 

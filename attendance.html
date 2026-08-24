@@ -509,20 +509,21 @@
         async function init() {
             try {
                 if (isAdmin) {
-                    const members = await getTeamMembers(currentUser.teamId);
-                    if (members.length > 0) {
+                    const allMembers = await getTeamMembers(currentUser.teamId);
+                    const teamMembers = allMembers.filter(m => m.role !== 'admin');
+                    if (teamMembers.length > 0) {
                         const selectEl = document.getElementById('adminMemberSelect');
                         const containerEl = document.getElementById('adminMemberSelectorContainer');
                         containerEl.style.display = 'block';
-                        selectEl.innerHTML = members.map(m => `
-                            <option value="${m.id}" ${m.id === currentUser.id ? 'selected' : ''}>
+                        selectEl.innerHTML = `<option value="${currentUser.id}">My Calendar (Admin)</option>` + teamMembers.map(m => `
+                            <option value="${m.id}">
                                 ${m.name} (${m.role})
                             </option>
                         `).join('');
 
                         selectEl.addEventListener('change', async (e) => {
                             const selectedId = e.target.value;
-                            const u = members.find(member => member.id === selectedId);
+                            const u = selectedId === currentUser.id ? currentUser : teamMembers.find(member => member.id === selectedId);
                             if (u) {
                                 viewedUser = u;
                                 await reloadDataAndUI();

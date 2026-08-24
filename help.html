@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help & User Guide | Tasko</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .guide-card {
+            background: white;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .guide-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent-light);
+            color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1.25rem 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .faq-answer {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="main-content">
+        <!-- Header -->
+        <header style="margin-bottom: 2.5rem;">
+            <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.25rem;">Help & Platform Guide</h1>
+            <p style="color: var(--text-dim); font-size: 0.95rem; font-weight: 500;">Everything you need to know to collaborate effectively on Tasko.</p>
+        </header>
+
+        <!-- Quick Start Steps -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+            <div class="guide-card">
+                <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1.25rem;">
+                    <div class="step-number">1</div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0;">Setup Workspace</h3>
+                </div>
+                <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem;">
+                    Head to the <b>Team</b> section to create a fresh team workspace or enter your team administrator's 6-character invite code to join an existing team.
+                </p>
+                <a href="teams.html" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.5rem 1rem; border-radius: 9999px;">
+                    Go to Team <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
+                </a>
+            </div>
+
+            <div class="guide-card">
+                <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1.25rem;">
+                    <div class="step-number">2</div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0;">Manage Tasks</h3>
+                </div>
+                <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem;">
+                    View assigned tasks under <b>Tasks</b>. Click on any task to upload your deliverable, submit work for review, or track approval status.
+                </p>
+                <a href="tasks.html" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.5rem 1rem; border-radius: 9999px;">
+                    View Tasks <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
+                </a>
+            </div>
+
+            <div class="guide-card">
+                <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1.25rem;">
+                    <div class="step-number">3</div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0;">Check Attendance</h3>
+                </div>
+                <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem;">
+                    Open the <b>Calendar</b> to log your daily check-in, maintain your active day streak, and see daily presence across team members.
+                </p>
+                <a href="attendance.html" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.5rem 1rem; border-radius: 9999px;">
+                    Open Calendar <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Detailed Feature Guide -->
+        <div class="guide-card" style="padding: 2.25rem; margin-bottom: 2rem;">
+            <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fas fa-compass" style="color: var(--primary);"></i> How to Use Tasko Features
+            </h2>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-th-large" style="color: var(--accent);"></i> Dashboard Metrics & Analytics
+                </div>
+                <div class="faq-answer">
+                    The <b>Dashboard</b> displays real-time task stats (Total, Ended, Running, Pending). The <b>Project Analytics</b> bar chart tracks team activity across the days of the week, while <b>Reminders</b> and <b>Project Progress</b> cards keep your schedule on track.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-comments" style="color: var(--accent);"></i> Real-Time Team Chat
+                </div>
+                <div class="faq-answer">
+                    Use <b>Team Chat</b> to communicate with your team members in real time. Send project updates, share links, or post quick announcements to keep everyone aligned.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-robot" style="color: var(--accent);"></i> AI Smart Assistant
+                </div>
+                <div class="faq-answer">
+                    Click the floating green robot icon in the bottom right corner of any page to open the <b>Tasko AI Assistant</b>. You can ask questions about your tasks, team members, attendance, or project statuses.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-cog" style="color: var(--accent);"></i> Settings & Profile Customization
+                </div>
+                <div class="faq-answer">
+                    Click <b>Settings</b> in the navigation sidebar to update your avatar, name, email, bio, and skills portfolio.
+                </div>
+            </div>
+        </div>
+
+        <!-- Support Box -->
+        <div class="guide-card" style="background: var(--accent-light); border-color: var(--accent); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--primary); margin-bottom: 0.25rem;">Need Additional Support?</h3>
+                <p style="color: var(--text-dim); font-size: 0.9rem; margin: 0;">Our AI assistant is ready to help you 24/7 with any workspace questions.</p>
+            </div>
+            <button class="btn btn-primary" onclick="window.toggleAssistant ? window.toggleAssistant() : null">
+                <i class="fas fa-robot"></i> Launch AI Assistant
+            </button>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initSidebar } from './js/sidebar.js';
+        document.addEventListener('DOMContentLoaded', initSidebar);
+    </script>
+</body>
+
+</html>
