@@ -545,7 +545,7 @@
             <div class="pricing-card">
                 <h3 class="pricing-title">Starter</h3>
                 <p class="pricing-subtitle">Perfect for small teams and side projects</p>
-                <div class="pricing-price">$0 <span>/ month</span></div>
+                <div class="pricing-price">₹0 <span>/ month</span></div>
                 <ul class="pricing-features">
                     <li><i class="fas fa-check"></i> Up to 5 Team Members</li>
                     <li><i class="fas fa-check"></i> Unlimited Task Creation</li>
@@ -561,7 +561,7 @@
                 <div class="popular-badge">MOST POPULAR</div>
                 <h3 class="pricing-title">Pro Squad</h3>
                 <p class="pricing-subtitle">For growing teams requiring full AI & proof loops</p>
-                <div class="pricing-price" id="proPrice">$12 <span>/ user / mo</span></div>
+                <div class="pricing-price" id="proPrice">₹999 <span>/ user / mo</span></div>
                 <ul class="pricing-features">
                     <li><i class="fas fa-check"></i> Unlimited Team Members</li>
                     <li><i class="fas fa-check"></i> Full Task Proof-of-Work Verification</li>
@@ -880,9 +880,9 @@
         if (pricingToggle && proPrice) {
             pricingToggle.addEventListener('change', () => {
                 if (pricingToggle.checked) {
-                    proPrice.innerHTML = '$9.60 <span>/ user / mo</span>';
+                    proPrice.innerHTML = '₹799 <span>/ user / mo</span>';
                 } else {
-                    proPrice.innerHTML = '$12 <span>/ user / mo</span>';
+                    proPrice.innerHTML = '₹999 <span>/ user / mo</span>';
                 }
             });
         }
