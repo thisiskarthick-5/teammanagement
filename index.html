@@ -4,471 +4,1039 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In | Tasko</title>
+    <title>TeamSync | AI-Powered Collaborative Team Management Platform</title>
+    <meta name="description" content="Supercharge team velocity with TeamSync. Real-time task lifecycle management, attendance tracking, streak multipliers, and Groq Llama-3.3 AI writing assistance.">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            background-color: var(--bg-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 1.5rem;
-        }
-
-        .login-container {
-            width: 100%;
-            max-width: 440px;
-            padding: 3rem;
-            background: white;
-            border-radius: 2rem;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
-            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .logo-box {
-            width: 60px;
-            height: 60px;
-            background: var(--primary);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.75rem;
-            margin: 0 auto 1.5rem;
-            box-shadow: 0 10px 20px rgba(6, 78, 59, 0.15);
-        }
-
-        h1 {
-            font-size: 1.85rem;
-            font-weight: 800;
-            text-align: center;
-            margin-bottom: 0.5rem;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--text-dim);
-            margin-bottom: 2.5rem;
-            font-size: 0.95rem;
-        }
-
-        .form-group input,
-        .form-group select {
-            background: #f1f5f9;
-            border: 1.5px solid transparent;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            background: white;
-            border-color: var(--primary);
-        }
-
-        .btn-primary {
-            height: 54px;
-            font-size: 1rem;
-            margin-top: 2rem;
-        }
-
-        .demo-badge {
-            display: inline-block;
-            padding: 0.4rem 0.8rem;
-            background: var(--accent-light);
-            color: var(--primary);
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-top: 2rem;
-            text-align: center;
-            width: 100%;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .login-container {
-                padding: 2rem 1.5rem;
-                border-radius: 1.5rem;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .subtitle {
-                margin-bottom: 2rem;
-            }
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div class="login-container">
-        <div class="logo-box">
-            <i class="fas fa-leaf"></i>
+    <!-- Top Announcement Bar -->
+    <div class="top-announcement-bar">
+        <span><i class="fas fa-sparkles" style="color: #fde047; margin-right: 0.4rem;"></i> <strong>NEW:</strong> TeamSync 2.0 with Groq Llama-3.3-70b AI Intelligence is Live!</span>
+        <a href="#features">Learn More <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i></a>
+    </div>
+
+    <!-- Clevora-Style Dark Hero Section -->
+    <section class="dark-hero-wrapper">
+        <!-- Dark Navigation Header -->
+        <nav class="dark-hero-nav">
+            <a href="index.html" class="dark-hero-logo">
+                <div class="dark-hero-logo-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <span class="dark-hero-logo-text">TEAMSYNC</span>
+            </a>
+
+            <ul class="dark-hero-links" id="navLinks">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#demo">Live Demo</a></li>
+                <li><a href="#why-us">Why Us</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button id="authBtnLogin" class="btn-nav-outline" style="color: white; border-color: rgba(255,255,255,0.25);">Sign In</button>
+                <button id="authBtnRegister" class="btn-lime-pill">Get Started</button>
+                <button class="mobile-nav-toggle" id="mobileToggle" style="color: white;">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Centered Hero Text -->
+        <div class="clevora-hero-content">
+            <h1 class="clevora-hero-title">
+                Supercharge Productivity in Your Team's Workflow.
+            </h1>
+            <p class="clevora-hero-sub">
+                Professional collaborative management tools to help your squad track tasks, daily attendance, streak multipliers, and AI-powered writing.
+            </p>
+            <div>
+                <button class="clevora-main-btn open-auth-modal" data-tab="register">
+                    Get Started Free
+                </button>
+            </div>
         </div>
-        <h1>TEAMSYNC</h1>
-        <p class="subtitle">Efficient Team Collaboration Platform</p>
 
-        <div id="loginSection">
-            <form id="loginForm">
-                <div class="form-group">
-                    <label>Username or Email</label>
-                    <input type="text" id="username" placeholder="Enter username or email" required>
+        <!-- 3D Fanning Curved Cards Carousel (5 Cards) -->
+        <div class="clevora-cards-container">
+            <div class="clevora-cards-grid">
+                <!-- Card 1: Electric Lime (Far Left) -->
+                <div class="clevora-card lime clevora-card-1">
+                    <div class="clevora-card-title">
+                        Task Velocity Boosts Team Growth
+                    </div>
+                    <div class="card-img-box">
+                        <img src="image1.png" alt="Dashboard Preview">
+                    </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 0.5rem;">
-                    <label>Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required>
+                <!-- Card 2: Dark Teal (Inner Left) -->
+                <div class="clevora-card teal clevora-card-2">
+                    <div class="clevora-card-title">
+                        Did You Know AI Writing Speeds Up Submissions?
+                    </div>
+                    <div class="card-img-box">
+                        <img src="image2.png" alt="Project Tasks Preview">
+                    </div>
                 </div>
-                
-                <p style="text-align: right; margin-bottom: 1.5rem; font-size: 0.85rem;">
-                    <a href="#" id="showForgotPassword" style="color: var(--text-dim); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+
+                <!-- Card 3: Electric Lime (Center Elevated) -->
+                <div class="clevora-card lime clevora-card-3">
+                    <div>
+                        <div class="clevora-card-title">
+                            How Common are Overdue Tasks in Projects?
+                        </div>
+                        <button class="card-video-btn">
+                            <i class="fas fa-play"></i> Watch The Video
+                        </button>
+                    </div>
+                    <div class="card-img-box">
+                        <img src="image3.png" alt="Attendance & Velocity Preview">
+                    </div>
+                </div>
+
+                <!-- Card 4: Dark Teal (Inner Right) -->
+                <div class="clevora-card teal clevora-card-4">
+                    <div class="clevora-card-title">
+                        Daily Attendance & Streak Multipliers Matter
+                    </div>
+                    <div class="card-img-box">
+                        <img src="image4.png" alt="Team Analytics Preview">
+                    </div>
+                </div>
+
+                <!-- Card 5: Electric Lime (Far Right) -->
+                <div class="clevora-card lime clevora-card-5">
+                    <div class="clevora-card-title">
+                        Real-Time Collaboration is Crucial
+                    </div>
+                    <div class="card-img-box">
+                        <img src="image5.png" alt="Chat Assistant Preview">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Organic SVG Curve Divider Transition -->
+    <div class="clevora-curve-divider">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path d="M0,15 C450,100 990,100 1440,15 L1440,120 L0,120 Z"></path>
+        </svg>
+    </div>
+
+    <!-- Key Features Section -->
+    <section id="features" class="landing-section landing-section-alt">
+        <div class="section-header">
+            <div class="section-badge"><i class="fas fa-cubes"></i> Core Capabilities</div>
+            <h2 class="section-title">Everything Your Team Needs to Build & Deliver Faster</h2>
+            <p class="section-subtitle">
+                Designed from the ground up for modern teams who demand visual elegance, real-time proof of work, and AI-accelerated workflows.
+            </p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="feature-card-title">Groq AI Writing & Assistant</h3>
+                <p class="feature-card-desc">
+                    Powered by Llama-3.3-70b. Automatically adjust message tone to Professional, Concise, or Friendly, and ask context-aware questions about active tasks.
+                </p>
+                <div>
+                    <span class="feature-tag">Llama-3.3-70b Integration</span>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3 class="feature-card-title">Task Verification & Proof-of-Work</h3>
+                <p class="feature-card-desc">
+                    Members submit verification notes and artifact URLs. Admins review, approve to trigger streak multipliers, or request revisions with direct feedback.
+                </p>
+                <div>
+                    <span class="feature-tag">Verification Loop</span>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <h3 class="feature-card-title">Attendance & Streak Multipliers</h3>
+                <p class="feature-card-desc">
+                    Gamified daily check-in tracker that rewards consistency. Maintain active streaks to boost team ranking and track daily velocity.
+                </p>
+                <div>
+                    <span class="feature-tag">Gamified Consistency</span>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-card-title">Role-Based Workspace Guard</h3>
+                <p class="feature-card-desc">
+                    Role management separating Admins from Members. Granular task provisioning, user provisioning, and workspace access lockouts.
+                </p>
+                <div>
+                    <span class="feature-tag">Enterprise Security</span>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="feature-card-title">Real-Time Team Analytics</h3>
+                <p class="feature-card-desc">
+                    Comprehensive velocity charts, completion percentages, streak leaderboards, and historical task trends updated instantly.
+                </p>
+                <div>
+                    <span class="feature-tag">Live Metrics</span>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <h3 class="feature-card-title">Automated Email Notifications</h3>
+                <p class="feature-card-desc">
+                    Instant EmailJS notifications for new task assignments, approval status updates, and temporary account credentials for newly provisioned users.
+                </p>
+                <div>
+                    <span class="feature-tag">EmailJS Dispatch</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Tab Showcase Section -->
+    <section id="demo" class="landing-section">
+        <div class="section-header">
+            <div class="section-badge"><i class="fas fa-desktop"></i> Interactive Preview</div>
+            <h2 class="section-title">See TeamSync in Action</h2>
+            <p class="section-subtitle">
+                Explore the core views of TeamSync and see how seamless collaboration feels.
+            </p>
+        </div>
+
+        <div class="tab-showcase-container">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="tab-dashboard">
+                    <i class="fas fa-border-all"></i> Team Dashboard
+                </button>
+                <button class="tab-btn" data-tab="tab-ai">
+                    <i class="fas fa-robot"></i> Smart AI Assistant
+                </button>
+                <button class="tab-btn" data-tab="tab-tasks">
+                    <i class="fas fa-check-double"></i> Task Board & Proofs
+                </button>
+                <button class="tab-btn" data-tab="tab-attendance">
+                    <i class="far fa-calendar-check"></i> Attendance & Streaks
+                </button>
+            </div>
+
+            <!-- Tab 1: Dashboard -->
+            <div class="tab-pane active" id="tab-dashboard">
+                <div class="tab-pane-content">
+                    <div class="tab-pane-text">
+                        <h3>Central Command Center for Your Team</h3>
+                        <p>
+                            Get a real-time 360-degree overview of team velocity, active streaks, pending task submissions, and user attendance status in one clean dashboard.
+                        </p>
+                        <ul class="tab-pane-list">
+                            <li><i class="fas fa-check-circle"></i> Live streak counters with highest streak badges</li>
+                            <li><i class="fas fa-check-circle"></i> Instant filter by task priority (High, Medium, Low)</li>
+                            <li><i class="fas fa-check-circle"></i> Quick action shortcuts to create tasks & provision members</li>
+                        </ul>
+                    </div>
+                    <div style="background: var(--bg-main); border: 1px solid var(--glass-border); border-radius: 20px; padding: 1.5rem;">
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="flex: 1; background: var(--primary); color: white; padding: 1rem; border-radius: 14px;">
+                                <div style="font-size: 0.75rem; opacity: 0.8;">Active Members</div>
+                                <div style="font-size: 1.6rem; font-weight: 800;">12 Online</div>
+                            </div>
+                            <div style="flex: 1; background: white; padding: 1rem; border-radius: 14px; border: 1px solid var(--glass-border);">
+                                <div style="font-size: 0.75rem; color: var(--text-dim);">Task Velocity</div>
+                                <div style="font-size: 1.6rem; font-weight: 800; color: var(--text-main);">+34%</div>
+                            </div>
+                        </div>
+                        <div style="background: white; padding: 1rem; border-radius: 14px; border: 1px solid var(--glass-border);">
+                            <div style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-main);">Recent Verified Artifacts</div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; padding: 0.4rem; background: #f8fafc; border-radius: 8px;">
+                                    <span>frontend-auth-v2.zip</span>
+                                    <span style="color: var(--accent); font-weight: 700;">Approved</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; padding: 0.4rem; background: #f8fafc; border-radius: 8px;">
+                                    <span>database-schema-migration.sql</span>
+                                    <span style="color: var(--accent); font-weight: 700;">Approved</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: AI Assistant -->
+            <div class="tab-pane" id="tab-ai">
+                <div class="tab-pane-content">
+                    <div class="tab-pane-text">
+                        <h3>Groq-Powered AI Assistant in Chat & Workspace</h3>
+                        <p>
+                            Ask questions directly to your AI assistant. It analyzes your team's live task data, attendance records, and workspace stats to provide actionable summaries and answer questions.
+                        </p>
+                        <ul class="tab-pane-list">
+                            <li><i class="fas fa-check-circle"></i> Tone Rewriter (Professional, Concise, Friendly, Assertive)</li>
+                            <li><i class="fas fa-check-circle"></i> Automatic summary of overdue or high-priority tasks</li>
+                            <li><i class="fas fa-check-circle"></i> Pre-configured Groq API with zero key setup required</li>
+                        </ul>
+                    </div>
+                    <div style="background: white; border: 1px solid var(--glass-border); border-radius: 20px; padding: 1.5rem; box-shadow: var(--shadow-sm);">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--glass-border);">
+                            <div style="width: 36px; height: 36px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 800; font-size: 0.9rem;">TeamSync AI Companion</div>
+                                <div style="font-size: 0.75rem; color: var(--accent); font-weight: 600;">Powered by Groq Llama-3.3-70b</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <div style="align-self: flex-end; background: var(--primary); color: white; padding: 0.75rem 1rem; border-radius: 14px 14px 2px 14px; font-size: 0.85rem; max-width: 80%;">
+                                What tasks are overdue for Sprint #42?
+                            </div>
+                            <div style="align-self: flex-start; background: #f1f5f9; color: var(--text-main); padding: 0.75rem 1rem; border-radius: 14px 14px 14px 2px; font-size: 0.85rem; max-width: 85%;">
+                                🤖 <strong>AI Assistant:</strong> There is 1 overdue task: <em>"UI Polish & Glassmorphic Styling"</em> assigned to Akash. All other 5 tasks are on schedule!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Tasks -->
+            <div class="tab-pane" id="tab-tasks">
+                <div class="tab-pane-content">
+                    <div class="tab-pane-text">
+                        <h3>Full Task Lifecycle with Verification Loop</h3>
+                        <p>
+                            Eliminate guess-work with proof-of-work submission links. Admins inspect submitted links and notes before approving tasks or requesting revisions.
+                        </p>
+                        <ul class="tab-pane-list">
+                            <li><i class="fas fa-check-circle"></i> Proof link submission & revision notes</li>
+                            <li><i class="fas fa-check-circle"></i> Status workflow: To-Do → In Review → Approved / Revision</li>
+                            <li><i class="fas fa-check-circle"></i> Automatic streak increment upon task approval</li>
+                        </ul>
+                    </div>
+                    <div style="background: var(--bg-main); border: 1px solid var(--glass-border); border-radius: 20px; padding: 1.5rem;">
+                        <div style="background: white; padding: 1.25rem; border-radius: 14px; border: 1px solid var(--glass-border); margin-bottom: 0.75rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span style="font-weight: 700; font-size: 0.9rem;">Deploy Firebase Auth Rules</span>
+                                <span style="background: #fef3c7; color: #92400e; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 6px;">In Review</span>
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 0.75rem;">Proof Link: <code>https://github.com/team/pull/42</code></p>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button style="background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700;"><i class="fas fa-check"></i> Approve</button>
+                                <button style="background: #ef4444; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700;"><i class="fas fa-redo"></i> Request Revision</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Attendance -->
+            <div class="tab-pane" id="tab-attendance">
+                <div class="tab-pane-content">
+                    <div class="tab-pane-text">
+                        <h3>Gamified Daily Attendance & Streak Boosters</h3>
+                        <p>
+                            Keep team members engaged every single day. One-click check-in updates attendance status, calculates continuous streak multipliers, and highlights top team contributors.
+                        </p>
+                        <ul class="tab-pane-list">
+                            <li><i class="fas fa-check-circle"></i> Instant daily one-click check-in</li>
+                            <li><i class="fas fa-check-circle"></i> Personal best streak records & streak leaderboards</li>
+                            <li><i class="fas fa-check-circle"></i> Visual calendar markers for present days</li>
+                        </ul>
+                    </div>
+                    <div style="background: white; border: 1px solid var(--glass-border); border-radius: 20px; padding: 1.5rem; text-align: center;">
+                        <div style="width: 70px; height: 70px; background: var(--accent-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1rem;">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h4 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 0.25rem;">Daily Check-In Completed!</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1rem;">You marked present for today. Current Streak: <strong>14 Days 🔥</strong></p>
+                        <div style="background: #ecfdf5; border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.6rem; border-radius: 10px; color: var(--primary); font-weight: 700; font-size: 0.8rem;">
+                            🎉 Keep it up! 1 more day to reach your 15-day streak milestone!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose TeamSync / Impact Stats -->
+    <section id="why-us" class="landing-section landing-section-alt">
+        <div class="section-header">
+            <div class="section-badge"><i class="fas fa-chart-pie"></i> Proven Impact</div>
+            <h2 class="section-title">Built for Speed, Reliability, and Results</h2>
+            <p class="section-subtitle">
+                Thousands of product squads and engineering teams rely on TeamSync daily to meet deadlines faster.
+            </p>
+        </div>
+
+        <div class="impact-banner-grid">
+            <div class="impact-card">
+                <div class="impact-number">99.9%</div>
+                <div class="impact-label">Platform Uptime</div>
+                <div class="impact-sub">Powered by Firebase Firestore real-time infrastructure</div>
+            </div>
+            <div class="impact-card">
+                <div class="impact-number">3.5x</div>
+                <div class="impact-label">Faster Task Delivery</div>
+                <div class="impact-sub">Boosted by AI writing helpers & instant verification loops</div>
+            </div>
+            <div class="impact-card">
+                <div class="impact-number">50k+</div>
+                <div class="impact-label">Verified Tasks</div>
+                <div class="impact-sub">Proof artifacts reviewed & approved by admins</div>
+            </div>
+            <div class="impact-card">
+                <div class="impact-number">10k+</div>
+                <div class="impact-label">Active Workspaces</div>
+                <div class="impact-sub">Collaborating across global engineering teams</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="landing-section">
+        <div class="section-header">
+            <div class="section-badge"><i class="fas fa-route"></i> Simple Onboarding</div>
+            <h2 class="section-title">How TeamSync Works in 4 Simple Steps</h2>
+            <p class="section-subtitle">
+                Get your entire squad onboarded and running in under 2 minutes.
+            </p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Create Workspace</h3>
+                <p class="step-desc">Sign up as an Admin, generate a unique 6-character workspace code, and set up your team parameters.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Provision Tasks</h3>
+                <p class="step-desc">Create tasks with deadlines, priority levels, and assign them directly to specific team members.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3 class="step-title">Track & Verify</h3>
+                <p class="step-desc">Members mark daily attendance, submit proof-of-work links, and build consecutive streak multipliers.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h3 class="step-title">Accelerate with AI</h3>
+                <p class="step-desc">Use Groq Llama-3.3 AI to refine chat messages, generate status reports, and summarize team progress.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Testimonials -->
+    <section id="testimonials" class="landing-section landing-section-alt">
+        <div class="section-header">
+            <div class="section-badge"><i class="fas fa-heart"></i> Loved by Teams</div>
+            <h2 class="section-title">What Engineering & Product Leads Say</h2>
+            <p class="section-subtitle">
+                Hear how TeamSync transformed team communication and project velocity.
+            </p>
+        </div>
+
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div>
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "The task verification loop completely eliminated vague 'it's done' messages in Slack. Now every completed task has a proof link and admin review. Velocity increased by 40% in our first month!"
+                    </p>
+                </div>
+                <div class="testimonial-user">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=David" alt="David Miller">
+                    <div>
+                        <div class="testimonial-name">David Miller</div>
+                        <div class="testimonial-role">VP of Engineering at FinTech Cloud</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div>
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "The Groq Llama-3.3 AI writing helper inside the chat room is unbelievable. Our developers rewrite tech jargon into crisp updates for clients in seconds!"
+                    </p>
+                </div>
+                <div class="testimonial-user">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia" alt="Sophia Chen">
+                    <div>
+                        <div class="testimonial-name">Sophia Chen</div>
+                        <div class="testimonial-role">Lead Product Manager at Nexus Labs</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div>
+                    <div class="testimonial-stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">
+                        "The daily streak multipliers turned attendance check-in into a fun competition. Everyone shows up on time, and our team dashboard is always up to date."
+                    </p>
+                </div>
+                <div class="testimonial-user">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=James" alt="James Ross">
+                    <div>
+                        <div class="testimonial-name">James Ross</div>
+                        <div class="testimonial-role">Founder at Launchpad Studio</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="landing-section">
+        <div class="section-header">
+            <div class="section-badge"><i class="fas fa-tags"></i> Transparent Pricing</div>
+            <h2 class="section-title">Simple, Predictable Plans for Every Team</h2>
+            <p class="section-subtitle">
+                Start free and upgrade as your team grows. No hidden fees or surprise lock-ins.
+            </p>
+        </div>
+
+        <div class="pricing-toggle-wrap">
+            <span class="pricing-toggle-label">Monthly</span>
+            <label class="pricing-switch">
+                <input type="checkbox" id="pricingToggle">
+                <span class="slider-round"></span>
+            </label>
+            <span class="pricing-toggle-label">Annual <span class="discount-badge">Save 20%</span></span>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Starter Plan -->
+            <div class="pricing-card">
+                <h3 class="pricing-title">Starter</h3>
+                <p class="pricing-subtitle">Perfect for small teams and side projects</p>
+                <div class="pricing-price">$0 <span>/ month</span></div>
+                <ul class="pricing-features">
+                    <li><i class="fas fa-check"></i> Up to 5 Team Members</li>
+                    <li><i class="fas fa-check"></i> Unlimited Task Creation</li>
+                    <li><i class="fas fa-check"></i> Daily Attendance Check-in</li>
+                    <li><i class="fas fa-check"></i> Standard Groq AI Queries</li>
+                    <li><i class="fas fa-check"></i> Basic Team Analytics</li>
+                </ul>
+                <button class="btn-nav-outline open-auth-modal" data-tab="register" style="width: 100%; height: 50px;">Get Started Free</button>
+            </div>
+
+            <!-- Pro Plan (Featured) -->
+            <div class="pricing-card featured">
+                <div class="popular-badge">MOST POPULAR</div>
+                <h3 class="pricing-title">Pro Squad</h3>
+                <p class="pricing-subtitle">For growing teams requiring full AI & proof loops</p>
+                <div class="pricing-price" id="proPrice">$12 <span>/ user / mo</span></div>
+                <ul class="pricing-features">
+                    <li><i class="fas fa-check"></i> Unlimited Team Members</li>
+                    <li><i class="fas fa-check"></i> Full Task Proof-of-Work Verification</li>
+                    <li><i class="fas fa-check"></i> Unlimited Groq Llama-3.3-70b AI Helpers</li>
+                    <li><i class="fas fa-check"></i> Gamified Streak Multipliers & Badges</li>
+                    <li><i class="fas fa-check"></i> Real-Time EmailJS Email Notifications</li>
+                    <li><i class="fas fa-check"></i> Priority Workspace Guard Security</li>
+                </ul>
+                <button class="btn-nav-primary open-auth-modal" data-tab="register" style="width: 100%; height: 50px;">Start 14-Day Free Trial</button>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="pricing-card">
+                <h3 class="pricing-title">Enterprise</h3>
+                <p class="pricing-subtitle">Custom controls, SLA support & dedicated infrastructure</p>
+                <div class="pricing-price">Custom</div>
+                <ul class="pricing-features">
+                    <li><i class="fas fa-check"></i> Everything in Pro Squad</li>
+                    <li><i class="fas fa-check"></i> Dedicated Database Instance</li>
+                    <li><i class="fas fa-check"></i> Custom Groq API Keys & Models</li>
+                    <li><i class="fas fa-check"></i> Admin Audit Logs & Data Export</li>
+                    <li><i class="fas fa-check"></i> 99.99% SLA Uptime & 24/7 Support</li>
+                </ul>
+                <button class="btn-nav-outline open-auth-modal" data-tab="login" style="width: 100%; height: 50px;">Contact Sales</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Accordion Section -->
+    <section id="faq" class="landing-section landing-section-alt">
+        <div class="section-header">
+            <div class="section-badge"><i class="fas fa-question-circle"></i> Got Questions?</div>
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle">
+                Everything you need to know about TeamSync features, security, and setup.
+            </p>
+        </div>
+
+        <div class="faq-container">
+            <div class="faq-item active">
+                <div class="faq-question">
+                    What is TeamSync and how does it help my team?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    TeamSync is a collaborative team management platform that combines task assignment, proof-of-work verification, daily attendance tracking with streak multipliers, and an integrated Groq Llama-3.3 AI assistant to streamline team workflows.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    How does the Groq AI writing helper work?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    The Groq AI helper is integrated directly inside the team chat and smart assistant drawer. Powered by the ultra-fast Llama-3.3-70b model, it allows you to instantly rewrite messages into professional, concise, friendly, or custom tones, as well as answer workspace queries about tasks and attendance.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    What is the Task Proof-of-Work Verification loop?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    When team members complete a task, they submit a verification note and URL proof (e.g. GitHub PR, Figma design link, or build artifact). Admins can inspect the submission and either approve it (which increments user streaks) or request revisions with written feedback.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    What is the difference between Admin and Member roles?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Admins have global workspace permissions to create tasks, approve or request revisions on task submissions, add or remove members, and access global analytics. Members have access to their personal dashboard, daily check-in calendar, current task lists, and team chat.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    Can I try TeamSync for free?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes! The Starter plan is 100% free forever for teams up to 5 members. No credit card is required to sign up and get started.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    Is my team data secure?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes. All authentication and data storage are powered by Google Firebase Firestore and Firebase Auth, employing industry-standard SSL encryption and strict security rules.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section class="landing-section">
+        <div class="cta-banner-box">
+            <h2 class="cta-banner-title">Ready to Boost Your Team's Velocity?</h2>
+            <p class="cta-banner-desc">
+                Join thousands of high-performing teams using TeamSync to simplify task tracking, build daily streaks, and harness AI.
+            </p>
+            <div class="cta-banner-actions">
+                <button class="btn-cta-white open-auth-modal" data-tab="register">
+                    Get Started Free <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
+                </button>
+                <a href="login.html" class="btn-hero-secondary" style="background: rgba(255,255,255,0.15); color: white; border-color: rgba(255,255,255,0.3);">
+                    Sign In to Existing Account
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="landing-logo">
+                    <div class="landing-logo-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <span class="landing-logo-text" style="color: white;">TEAMSYNC</span>
+                </div>
+                <p>
+                    Collaborative team management platform built for visual excellence, role-based security, and AI productivity.
+                </p>
+                <div class="footer-socials">
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#demo">Live Demo</a></li>
+                    <li><a href="#pricing">Pricing Plans</a></li>
+                    <li><a href="login.html">Sign In</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4>Features</h4>
+                <ul>
+                    <li><a href="#features">Groq AI Assistant</a></li>
+                    <li><a href="#features">Proof Verification</a></li>
+                    <li><a href="#features">Daily Streaks</a></li>
+                    <li><a href="#features">EmailJS Alerts</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="help.html">Help & Docs</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4>Stay Updated</h4>
+                <p style="font-size: 0.85rem; margin-bottom: 0.5rem;">Subscribe to our product updates & AI productivity tips.</p>
+                <form id="newsletterForm" class="newsletter-input-group">
+                    <input type="email" id="newsletterEmail" placeholder="Enter your email" required>
+                    <button type="submit">Join</button>
+                </form>
+                <div id="newsletterMsg" style="font-size: 0.75rem; color: #a7f3d0; margin-top: 0.5rem; display: none;"></div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div>© 2026 TeamSync Inc. All rights reserved.</div>
+            <div style="display: flex; gap: 1.5rem;">
+                <a href="#" style="color: #94a3b8; text-decoration: none;">Privacy Policy</a>
+                <a href="#" style="color: #94a3b8; text-decoration: none;">Terms of Service</a>
+                <a href="#" style="color: #94a3b8; text-decoration: none;">Security</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Landing Page Auth Modal (Interactive Sign In / Register directly on page) -->
+    <div class="landing-modal-overlay" id="authModal">
+        <div class="landing-modal-content">
+            <button class="modal-close-btn" id="closeAuthModal" aria-label="Close modal">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                <div style="width: 44px; height: 44px; background: var(--primary); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem;">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <span style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">TEAMSYNC</span>
+            </div>
+
+            <!-- Login Form in Modal -->
+            <div id="modalLoginSection">
+                <h3 style="font-size: 1.3rem; font-weight: 800; text-align: center; margin-bottom: 0.3rem;">Welcome Back</h3>
+                <p style="text-align: center; color: var(--text-dim); font-size: 0.88rem; margin-bottom: 1.5rem;">Sign in to access your workspace</p>
+
+                <form id="modalLoginForm">
+                    <div class="form-group">
+                        <label>Username or Email</label>
+                        <input type="text" id="modalUsername" placeholder="Enter username or email" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0.5rem;">
+                        <label>Password</label>
+                        <input type="password" id="modalPassword" placeholder="Enter password" required>
+                    </div>
+                    <p style="text-align: right; margin-bottom: 1.25rem; font-size: 0.85rem;">
+                        <a href="login.html#forgot" style="color: var(--text-dim); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+                    </p>
+                    <div id="modalErrorMsg" class="error-msg" style="text-align: center; margin-bottom: 1rem; color: #ef4444; font-weight: 600; display: none;"></div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 50px;">
+                        Sign In <i class="fas fa-arrow-right" style="margin-left: 0.4rem;"></i>
+                    </button>
+                </form>
+                <p style="text-align: center; margin-top: 1.25rem; font-size: 0.88rem;">
+                    <a href="#" id="modalShowRegister" style="color: var(--primary); font-weight: 700; text-decoration: none;">New to TeamSync? Create Account</a>
                 </p>
 
-                <div id="errorMsg" class="error-msg"
-                    style="text-align: center; margin-bottom: 1rem; color: #ef4444; font-weight: 600; display: none;"></div>
+                <div style="margin-top: 1.25rem; padding: 0.5rem; background: var(--accent-light); border-radius: 8px; font-size: 0.78rem; text-align: center; color: var(--primary); font-weight: 700;">
+                    <i class="fas fa-key"></i> Demo Admin: <strong>admin</strong> / <strong>admin123</strong>
+                </div>
+            </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    Get Started <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
-                </button>
-            </form>
-            
-            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
-                <a href="#" id="showRegister" style="color: var(--primary); font-weight: 600; text-decoration: none;">New member? Register here</a>
-            </p>
-        </div>
+            <!-- Register Form in Modal -->
+            <div id="modalRegisterSection" style="display: none;">
+                <h3 style="font-size: 1.3rem; font-weight: 800; text-align: center; margin-bottom: 0.3rem;">Create Account</h3>
+                <p style="text-align: center; color: var(--text-dim); font-size: 0.88rem; margin-bottom: 1.5rem;">Start your 14-day free trial</p>
 
-        <div id="registerSection" style="display: none;">
-            <form id="registerForm">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="regName" placeholder="e.g. Jane Doe" required>
-                </div>
-                <div class="form-group">
-                    <label>Professional Email</label>
-                    <input type="email" id="regEmail" placeholder="name@company.com" required>
-                </div>
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" id="regUsername" placeholder="e.g. janedoe" required>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="regPassword" placeholder="Create a password" required>
-                    <div id="strengthContainer" style="margin-top: 0.5rem; display: none;">
-                        <div style="display: flex; gap: 4px; height: 6px; margin-bottom: 0.3rem;">
-                            <div id="bar1" style="flex: 1; background: #e2e8f0; border-radius: 2px; transition: background 0.3s;"></div>
-                            <div id="bar2" style="flex: 1; background: #e2e8f0; border-radius: 2px; transition: background 0.3s;"></div>
-                            <div id="bar3" style="flex: 1; background: #e2e8f0; border-radius: 2px; transition: background 0.3s;"></div>
-                            <div id="bar4" style="flex: 1; background: #e2e8f0; border-radius: 2px; transition: background 0.3s;"></div>
-                        </div>
-                        <span id="strengthText" style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim);">Password strength</span>
+                <form id="modalRegisterForm">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="modalRegName" placeholder="e.g. Jane Doe" required>
                     </div>
-                <div id="regErrorMsg" class="error-msg" style="text-align: center; margin-bottom: 1rem; color: #ef4444; font-weight: 600; display: none;"></div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    Create Account <i class="fas fa-user-plus" style="margin-left: 0.5rem;"></i>
-                </button>
-            </form>
-            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
-                <a href="#" id="showLogin" style="color: var(--primary); font-weight: 600; text-decoration: none;">Already have an account? Sign In</a>
-            </p>
-        </div>
-
-        <div id="forgotPasswordSection" style="display: none;">
-            <form id="forgotPasswordForm">
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" id="resetEmail" placeholder="Enter your registered email" required>
-                </div>
-                <div id="resetSuccessMsg" class="success-msg" style="text-align: center; margin-bottom: 1rem; color: var(--primary); font-weight: 600; display: none;"></div>
-                <div id="resetErrorMsg" class="error-msg" style="text-align: center; margin-bottom: 1rem; color: #ef4444; font-weight: 600; display: none;"></div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    Send Reset Link <i class="fas fa-paper-plane" style="margin-left: 0.5rem;"></i>
-                </button>
-            </form>
-            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
-                <a href="#" id="hideForgotPassword" style="color: var(--primary); font-weight: 600; text-decoration: none;">Back to Sign In</a>
-            </p>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="modalRegEmail" placeholder="name@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="modalRegUsername" placeholder="e.g. janedoe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="modalRegPassword" placeholder="Create password" required>
+                    </div>
+                    <div id="modalRegErrorMsg" class="error-msg" style="text-align: center; margin-bottom: 1rem; color: #ef4444; font-weight: 600; display: none;"></div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 50px;">
+                        Get Started <i class="fas fa-user-plus" style="margin-left: 0.4rem;"></i>
+                    </button>
+                </form>
+                <p style="text-align: center; margin-top: 1.25rem; font-size: 0.88rem;">
+                    <a href="#" id="modalShowLogin" style="color: var(--primary); font-weight: 700; text-decoration: none;">Already have an account? Sign In</a>
+                </p>
+            </div>
         </div>
     </div>
 
+    <!-- Script Execution -->
     <script type="module">
-        import { getAllUsers, createUser, setCurrentUser, getCurrentUser, loginUser, registerUser, sendPasswordReset } from './js/data.js';
+        import { getAllUsers, createUser, loginUser, registerUser, getCurrentUser } from './js/data.js';
 
-        // Login Submit
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const usernameInput = document.getElementById('username').value.trim();
-            const passwordInput = document.getElementById('password').value;
-            const errorMsg = document.getElementById('errorMsg');
-            const submitBtn = e.target.querySelector('button[type="submit"]');
+        // Check if user is already logged in
+        const user = getCurrentUser();
+        if (user) {
+            // Add a quick banner action to go to dashboard
+            const navActions = document.querySelector('.landing-nav-actions');
+            if (navActions) {
+                navActions.innerHTML = `
+                    <a href="dashboard.html" class="btn-nav-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-th-large"></i> Go to Workspace
+                    </a>
+                `;
+            }
+        }
 
-            try {
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
-                submitBtn.disabled = true;
-                errorMsg.style.display = 'none';
+        // Mobile Nav Toggle
+        const mobileToggle = document.getElementById('mobileToggle');
+        const navLinks = document.getElementById('navLinks');
+        if (mobileToggle && navLinks) {
+            mobileToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('mobile-open');
+            });
+        }
 
-                // Seed default users if the admin user is not found, so the demo credentials work!
-                const users = await getAllUsers();
-                if (!users.find(u => u.username?.toLowerCase() === 'admin')) {
-                    console.log("Seeding initial database users...");
-                    const initialUsers = [
-                        {
-                            id: 'TM-001',
-                            name: 'Admin User',
-                            role: 'admin',
-                            email: 'admin@team.com',
-                            username: 'admin',
-                            password: 'admin123',
-                            streak: 0,
-                            longestStreak: 0,
-                            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
-                        },
-                        {
-                            id: 'TM-002',
-                            name: 'Karth fire',
-                            role: 'member',
-                            email: 'karthfire@gmail.com',
-                            username: 'karthfire',
-                            password: 'karth123',
-                            streak: 0,
-                            longestStreak: 0,
-                            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=KarthFire'
-                        },
-                        {
-                            id: 'TM-003',
-                            name: 'Karthick',
-                            role: 'member',
-                            email: 'karthick123@gmail.com',
-                            username: 'karthick',
-                            password: 'karthick123',
-                            streak: 0,
-                            longestStreak: 0,
-                            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Karthick'
-                        },
-                        {
-                            id: 'TM-004',
-                            name: 'Akash',
-                            role: 'member',
-                            email: 'akash@gmail.com',
-                            username: 'akash',
-                            password: 'akash123',
-                            streak: 0,
-                            longestStreak: 0,
-                            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Akash'
-                        }
-                    ];
+        // Interactive Tabs
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.getAttribute('data-tab');
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(p => p.classList.remove('active'));
 
-                    for (const u of initialUsers) {
-                        await createUser(u);
-                    }
-                }
+                btn.classList.add('active');
+                const activePane = document.getElementById(targetTab);
+                if (activePane) activePane.classList.add('active');
+            });
+        });
 
-                await loginUser(usernameInput, passwordInput);
-                window.location.href = 'dashboard.html';
-            } catch (err) {
-                console.error(err);
-                submitBtn.innerHTML = 'Get Started <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>';
-                submitBtn.disabled = false;
-                errorMsg.style.display = 'block';
-                
-                // User-friendly error mapping
-                if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-                    errorMsg.innerText = "Invalid username/email or password.";
-                } else if (err.code === 'auth/too-many-requests') {
-                    errorMsg.innerText = "Too many login attempts. Please reset your password or try again later.";
+        // Pricing Toggle Switch
+        const pricingToggle = document.getElementById('pricingToggle');
+        const proPrice = document.getElementById('proPrice');
+        if (pricingToggle && proPrice) {
+            pricingToggle.addEventListener('change', () => {
+                if (pricingToggle.checked) {
+                    proPrice.innerHTML = '$9.60 <span>/ user / mo</span>';
                 } else {
-                    errorMsg.innerHTML = `<strong>Error:</strong> ${err.message || 'Unknown authentication issue.'}`;
-                }
-            }
-        });
-
-        // Register Submit
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('regName').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const username = document.getElementById('regUsername').value.trim().toLowerCase();
-            const password = document.getElementById('regPassword').value;
-            const role = 'member';
-            const errorMsg = document.getElementById('regErrorMsg');
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-
-            // Strong password enforcement
-            if (password.length < 8) {
-                errorMsg.style.display = 'block';
-                errorMsg.innerText = "Password must be at least 8 characters long.";
-                return;
-            }
-            if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
-                errorMsg.style.display = 'block';
-                errorMsg.innerText = "Password must contain uppercase, lowercase letters, and at least one number.";
-                return;
-            }
-
-            try {
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
-                submitBtn.disabled = true;
-                errorMsg.style.display = 'none';
-
-                await registerUser(name, email, username, password, role);
-                window.location.href = 'dashboard.html';
-            } catch (err) {
-                console.error(err);
-                submitBtn.innerHTML = 'Create Account <i class="fas fa-user-plus" style="margin-left: 0.5rem;"></i>';
-                submitBtn.disabled = false;
-                errorMsg.style.display = 'block';
-                if (err.code === 'auth/email-already-in-use') {
-                    errorMsg.innerText = "This email is already in use by another account.";
-                } else if (err.code === 'auth/weak-password') {
-                    errorMsg.innerText = "The password is too weak.";
-                } else if (err.code === 'auth/invalid-email') {
-                    errorMsg.innerText = "The email address is invalid.";
-                } else {
-                    errorMsg.innerText = err.message || "Failed to create account.";
-                }
-            }
-        });
-
-        // Forgot Password Submit
-        document.getElementById('forgotPasswordForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const resetEmail = document.getElementById('resetEmail').value.trim();
-            const successMsg = document.getElementById('resetSuccessMsg');
-            const errorMsg = document.getElementById('resetErrorMsg');
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-
-            try {
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-                submitBtn.disabled = true;
-                successMsg.style.display = 'none';
-                errorMsg.style.display = 'none';
-
-                await sendPasswordReset(resetEmail);
-                
-                successMsg.style.display = 'block';
-                successMsg.innerText = "Password reset email sent! Please check your inbox.";
-                document.getElementById('resetEmail').value = '';
-            } catch (err) {
-                console.error(err);
-                errorMsg.style.display = 'block';
-                if (err.code === 'auth/user-not-found') {
-                    errorMsg.innerText = "No account found with this email address.";
-                } else if (err.code === 'auth/invalid-email') {
-                    errorMsg.innerText = "Please enter a valid email address.";
-                } else {
-                    errorMsg.innerText = err.message || "Failed to send reset email.";
-                }
-            } finally {
-                submitBtn.innerHTML = 'Send Reset Link <i class="fas fa-paper-plane" style="margin-left: 0.5rem;"></i>';
-                submitBtn.disabled = false;
-            }
-        });
-
-        // Navigation toggles
-        document.getElementById('showRegister').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('registerSection').style.display = 'block';
-            document.getElementById('errorMsg').style.display = 'none';
-        });
-
-        document.getElementById('showLogin').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('registerSection').style.display = 'none';
-            document.getElementById('loginSection').style.display = 'block';
-            document.getElementById('regErrorMsg').style.display = 'none';
-        });
-
-        document.getElementById('showForgotPassword').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('forgotPasswordSection').style.display = 'block';
-            document.getElementById('errorMsg').style.display = 'none';
-        });
-
-        document.getElementById('hideForgotPassword').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('forgotPasswordSection').style.display = 'none';
-            document.getElementById('loginSection').style.display = 'block';
-            document.getElementById('resetSuccessMsg').style.display = 'none';
-            document.getElementById('resetErrorMsg').style.display = 'none';
-        });
-
-        // Interactive Password Strength Meter
-        const regPasswordInput = document.getElementById('regPassword');
-        const strengthContainer = document.getElementById('strengthContainer');
-        const strengthText = document.getElementById('strengthText');
-        const bars = [
-            document.getElementById('bar1'),
-            document.getElementById('bar2'),
-            document.getElementById('bar3'),
-            document.getElementById('bar4')
-        ];
-
-        regPasswordInput.addEventListener('input', () => {
-            const val = regPasswordInput.value;
-            if (val === '') {
-                strengthContainer.style.display = 'none';
-                return;
-            }
-            strengthContainer.style.display = 'block';
-
-            let score = 0;
-            if (val.length >= 8) score++;
-            if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
-            if (/[0-9]/.test(val)) score++;
-            if (/[^A-Za-z0-9]/.test(val)) score++;
-
-            bars.forEach((bar, idx) => {
-                if (idx < score) {
-                    if (score === 1) {
-                        bar.style.background = '#ef4444'; // Red
-                    } else if (score === 2) {
-                        bar.style.background = '#f59e0b'; // Orange
-                    } else if (score === 3) {
-                        bar.style.background = '#3b82f6'; // Blue
-                    } else {
-                        bar.style.background = '#10b981'; // Green
-                    }
-                } else {
-                    bar.style.background = '#e2e8f0'; // Gray
+                    proPrice.innerHTML = '$12 <span>/ user / mo</span>';
                 }
             });
+        }
 
-            const labels = ["Too Weak", "Weak", "Medium", "Strong"];
-            strengthText.innerText = `Strength: ${labels[score - 1] || 'Too Weak'}`;
-            if (score === 4) {
-                strengthText.style.color = '#10b981';
-            } else if (score === 3) {
-                strengthText.style.color = '#3b82f6';
-            } else if (score === 2) {
-                strengthText.style.color = '#f59e0b';
-            } else {
-                strengthText.style.color = '#ef4444';
-            }
+        // FAQ Accordion
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                faqItems.forEach(i => i.classList.remove('active'));
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
         });
 
-        // Redirect if already logged in
-        if (getCurrentUser()) {
-            window.location.href = 'dashboard.html';
+        // Auth Modal Controls
+        const authModal = document.getElementById('authModal');
+        const closeAuthModal = document.getElementById('closeAuthModal');
+        const authBtnLogin = document.getElementById('authBtnLogin');
+        const authBtnRegister = document.getElementById('authBtnRegister');
+        const heroGetStarted = document.getElementById('heroGetStarted');
+        const openAuthModals = document.querySelectorAll('.open-auth-modal');
+        const modalLoginSection = document.getElementById('modalLoginSection');
+        const modalRegisterSection = document.getElementById('modalRegisterSection');
+        const modalShowRegister = document.getElementById('modalShowRegister');
+        const modalShowLogin = document.getElementById('modalShowLogin');
+
+        function openModal(mode = 'login') {
+            if (mode === 'register') {
+                modalLoginSection.style.display = 'none';
+                modalRegisterSection.style.display = 'block';
+            } else {
+                modalRegisterSection.style.display = 'none';
+                modalLoginSection.style.display = 'block';
+            }
+            authModal.classList.add('active');
+        }
+
+        function closeModal() {
+            authModal.classList.remove('active');
+        }
+
+        if (authBtnLogin) authBtnLogin.addEventListener('click', () => openModal('login'));
+        if (authBtnRegister) authBtnRegister.addEventListener('click', () => openModal('register'));
+        if (heroGetStarted) heroGetStarted.addEventListener('click', () => openModal('register'));
+        if (closeAuthModal) closeAuthModal.addEventListener('click', closeModal);
+
+        openAuthModals.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.getAttribute('data-tab') || 'login';
+                openModal(tab);
+            });
+        });
+
+        if (modalShowRegister) {
+            modalShowRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal('register');
+            });
+        }
+
+        if (modalShowLogin) {
+            modalShowLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal('login');
+            });
+        }
+
+        // Modal Login Submit
+        const modalLoginForm = document.getElementById('modalLoginForm');
+        if (modalLoginForm) {
+            modalLoginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.getElementById('modalUsername').value.trim();
+                const password = document.getElementById('modalPassword').value;
+                const errorMsg = document.getElementById('modalErrorMsg');
+                const submitBtn = modalLoginForm.querySelector('button[type="submit"]');
+
+                try {
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+                    submitBtn.disabled = true;
+                    errorMsg.style.display = 'none';
+
+                    // Seed default users if needed
+                    const users = await getAllUsers();
+                    if (!users.find(u => u.username?.toLowerCase() === 'admin')) {
+                        const initialUsers = [
+                            { id: 'TM-001', name: 'Admin User', role: 'admin', email: 'admin@team.com', username: 'admin', password: 'admin123', streak: 0, longestStreak: 0, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin' },
+                            { id: 'TM-002', name: 'Karth fire', role: 'member', email: 'karthfire@gmail.com', username: 'karthfire', password: 'karth123', streak: 0, longestStreak: 0, avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=KarthFire' }
+                        ];
+                        for (const u of initialUsers) await createUser(u);
+                    }
+
+                    await loginUser(username, password);
+                    window.location.href = 'dashboard.html';
+                } catch (err) {
+                    console.error(err);
+                    submitBtn.innerHTML = 'Sign In <i class="fas fa-arrow-right" style="margin-left: 0.4rem;"></i>';
+                    submitBtn.disabled = false;
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = "Invalid username/email or password.";
+                }
+            });
+        }
+
+        // Modal Register Submit
+        const modalRegisterForm = document.getElementById('modalRegisterForm');
+        if (modalRegisterForm) {
+            modalRegisterForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('modalRegName').value.trim();
+                const email = document.getElementById('modalRegEmail').value.trim();
+                const username = document.getElementById('modalRegUsername').value.trim().toLowerCase();
+                const password = document.getElementById('modalRegPassword').value;
+                const errorMsg = document.getElementById('modalRegErrorMsg');
+                const submitBtn = modalRegisterForm.querySelector('button[type="submit"]');
+
+                if (password.length < 8) {
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = "Password must be at least 8 characters long.";
+                    return;
+                }
+
+                try {
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+                    submitBtn.disabled = true;
+                    errorMsg.style.display = 'none';
+
+                    await registerUser(name, email, username, password, 'member');
+                    window.location.href = 'dashboard.html';
+                } catch (err) {
+                    console.error(err);
+                    submitBtn.innerHTML = 'Get Started <i class="fas fa-user-plus" style="margin-left: 0.4rem;"></i>';
+                    submitBtn.disabled = false;
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = err.message || "Failed to create account.";
+                }
+            });
+        }
+
+        // Newsletter Form Submit
+        const newsletterForm = document.getElementById('newsletterForm');
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const msg = document.getElementById('newsletterMsg');
+                if (msg) {
+                    msg.style.display = 'block';
+                    msg.innerText = "🎉 Thank you for subscribing to TeamSync updates!";
+                    document.getElementById('newsletterEmail').value = '';
+                }
+            });
         }
     </script>
 </body>

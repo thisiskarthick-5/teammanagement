@@ -400,7 +400,7 @@ export function getCurrentUser() {
 export async function logout() {
     await signOut(auth);
     localStorage.removeItem('teamSync_user');
-    window.location.href = 'index.html';
+    window.location.href = 'login.html';
 }
 
 // Secure User Login with Username or Email and automatic migration
@@ -591,7 +591,8 @@ async function runMigrationScript(oldId, newUid) {
 // Session Synchronization Hook
 onAuthStateChanged(auth, async (firebaseUser) => {
     const path = window.location.pathname;
-    const isLoginPage = path.endsWith('index.html') || path.endsWith('/') || path === '';
+    const isLoginPage = path.includes('login.html');
+    const isLandingPage = path.endsWith('index.html') || path.endsWith('/') || path === '';
 
     if (firebaseUser) {
         const localUser = getCurrentUser();
@@ -612,10 +613,10 @@ onAuthStateChanged(auth, async (firebaseUser) => {
             }
         }
     } else {
-        if (!isLoginPage) {
+        if (!isLoginPage && !isLandingPage) {
             console.log("No authenticated Firebase Auth session found. Ending local session...");
             localStorage.removeItem('teamSync_user');
-            window.location.href = 'index.html';
+            window.location.href = 'login.html';
         }
     }
 });

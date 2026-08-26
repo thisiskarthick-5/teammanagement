@@ -4,7 +4,7 @@ import { initSmartAssistant } from './smart-assistant.js';
 export function initSidebar() {
     const user = getCurrentUser();
     if (!user) {
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
         return;
     }
 
