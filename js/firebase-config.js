@@ -21,8 +21,8 @@ const db = getFirestore(app);
 
 // Groq AI Assistant Configuration
 // REPLACE WITH YOUR GROQ API KEY
-export const GROQ_API_KEY = "YOUR_GROQ_API_KEY_HERE";
-export const GROQ_MODEL = "llama-3.3-70b-versatile";
+export const GROQ_API_KEY = "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";
+export const GROQ_MODEL = "qwen/qwen3.6-27b";
 
 // EmailJS Configuration (Optional - for Email Notifications)
 export const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";
