@@ -1,11 +1,11 @@
 /**
- * TEAMLINK AI Writing Assistant & Tone Cleanup Module
+ * TEAMSYNC AI Writing Assistant & Tone Cleanup Module
  * Uses Groq API client-side with central API key configuration.
  */
 
 import { GROQ_API_KEY, GROQ_MODEL } from './firebase-config.js';
 
-const SYSTEM_INSTRUCTION = `You are an expert writing assistant integrated into a professional team chat application called TEAMLINK.
+const SYSTEM_INSTRUCTION = `You are an expert writing assistant integrated into a professional team chat application called TEAMSYNC.
 Your job is to rewrite, clean up, or draft a chat message based on the user's request.
 Maintain the key information, but adjust the style, grammar, and tone.
 IMPORTANT rules:

@@ -1,5 +1,5 @@
 /**
- * TEAMLINK Smart AI Assistant Chat Widget
+ * TEAMSYNC Smart AI Assistant Chat Widget
  * Site-wide floating helper enabling users to ask questions like:
  * - "What is overdue?"
  * - "What should I do today?"
@@ -9,7 +9,7 @@
 import { getCurrentUser, getTasks, getTeamMembers, getAllAttendance } from './data.js';
 import { GROQ_API_KEY, GROQ_MODEL } from './firebase-config.js';
 
-const SYSTEM_INSTRUCTION = `You are TEAMLINK AI Assistant, a virtual companion for a high-performance team collaboration platform.
+const SYSTEM_INSTRUCTION = `You are TEAMSYNC AI Assistant, a virtual companion for a high-performance team collaboration platform.
 You have access to real-time project management details (current user info, tasks list, team members list, and attendance data).
 Your goal is to answer the user's questions about their tasks, schedule, and team progress using the provided context.
 

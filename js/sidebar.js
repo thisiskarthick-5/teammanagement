@@ -26,9 +26,9 @@ export function initSidebar() {
         <div class="floating-sidebar hide-mobile">
             <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; padding: 0 0.5rem;">
                 <div style="width: 38px; height: 38px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white;">
-                    <i class="fas fa-cubes" style="font-size: 1.1rem;"></i>
+                    <i class="fas fa-leaf" style="font-size: 1.1rem;"></i>
                 </div>
-                <span style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">Tasko</span>
+                <span style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px;">TEAMSYNC</span>
             </div>
             
             <nav style="flex: 1; display: flex; flex-direction: column;">

@@ -70,9 +70,9 @@ export async function createUser(userData, selfRegister = false) {
                 await sendMail({
                     toEmail: userData.email,
                     toName: userData.name,
-                    subject: `Welcome to TEAMLINK! Your Account Credentials`,
+                    subject: `Welcome to TEAMSYNC! Your Account Credentials`,
                     bodyTitle: `Your profile has been created`,
-                    bodyText: `Hello ${userData.name.split(' ')[0]},\n\nYour profile has been set up on TEAMLINK by your administrator.\n\nHere are your login credentials:\nUsername: ${userData.username}\nTemporary Password: ${userData.password}\n\nPlease sign in to activate your account.`,
+                    bodyText: `Hello ${userData.name.split(' ')[0]},\n\nYour profile has been set up on TEAMSYNC by your administrator.\n\nHere are your login credentials:\nUsername: ${userData.username}\nTemporary Password: ${userData.password}\n\nPlease sign in to activate your account.`,
                     actionUrl: 'index.html',
                     actionText: 'Sign In Now'
                 });
@@ -128,7 +128,7 @@ export async function createTask(taskData) {
                     toName: assignee.name,
                     subject: `New Task Assigned: ${taskData.title}`,
                     bodyTitle: `You have been assigned a new task`,
-                    bodyText: `Hello ${assignee.name.split(' ')[0]},\n\nYou have been assigned a new task on TEAMLINK.\n\nTask: ${taskData.title}\nPriority: ${taskData.priority}\nDeadline: ${taskData.deadline}\n\nPlease check your tasks list in the app.`,
+                    bodyText: `Hello ${assignee.name.split(' ')[0]},\n\nYou have been assigned a new task on TEAMSYNC.\n\nTask: ${taskData.title}\nPriority: ${taskData.priority}\nDeadline: ${taskData.deadline}\n\nPlease check your tasks list in the app.`,
                     actionUrl: 'tasks.html',
                     actionText: 'View Tasks'
                 });
