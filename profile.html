@@ -3,12 +3,12 @@
 
 <head>
     <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Settings | TEAMSYNC</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .profile-card {
             background: white;
@@ -312,6 +312,34 @@
                         
                         <div style="padding: 5rem 2.5rem 2.5rem; text-align: center;">
                             <h1 style="font-size: 2.25rem; margin-bottom: 0.25rem;">${user.name}</h1>
+
+                            ${(user.jobTitle || user.department) ? `
+                                <div style="font-size: 1.1rem; font-weight: 700; color: var(--primary-light); margin-bottom: 0.5rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span>${user.jobTitle || 'Team Member'}</span>
+                                    ${user.department ? `<span style="color: var(--text-dim); font-weight: 500;">in ${user.department}</span>` : ''}
+                                </div>
+                            ` : ''}
+
+                            ${user.availability ? `
+                                <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+                                    <span style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; font-weight: 800; padding: 0.35rem 0.85rem; border-radius: 9999px; text-transform: uppercase;
+                                        ${user.availability === 'Available' ? 'background: #d1fae5; color: #065f46;' : ''}
+                                        ${user.availability === 'Busy' ? 'background: #fee2e2; color: #991b1b;' : ''}
+                                        ${user.availability === 'Away' ? 'background: #fef3c7; color: #92400e;' : ''}
+                                        ${user.availability === 'Meeting' ? 'background: #e0f2fe; color: #075985;' : ''}
+                                    ">
+                                        <span style="width: 8px; height: 8px; border-radius: 50%;
+                                            ${user.availability === 'Available' ? 'background: #10b981;' : ''}
+                                            ${user.availability === 'Busy' ? 'background: #ef4444;' : ''}
+                                            ${user.availability === 'Away' ? 'background: #f59e0b;' : ''}
+                                            ${user.availability === 'Meeting' ? 'background: #0ea5e9;' : ''}
+                                        "></span>
+                                        ${user.availability === 'Meeting' ? 'In a Meeting' : user.availability}
+                                    </span>
+                                </div>
+                            ` : ''}
+
                             <div style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
                                 <span style="background: #f1f5f9; color: #475569; padding: 0.4rem 1rem; border-radius: 100px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">${user.id}</span>
                                 <span style="background: var(--accent-light); color: var(--primary-light); padding: 0.4rem 1rem; border-radius: 100px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;">${user.role}</span>
@@ -480,6 +508,30 @@
                                     <div class="form-group" id="group-name" style="margin-bottom: 0;">
                                         <label>Display Name</label>
                                         <input type="text" id="editName" placeholder="Your name" value="${user.name || ''}" required>
+                                    </div>
+                                </div>
+
+                                <!-- Professional Info -->
+                                <div style="background: #f8fafc; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;" id="group-work">
+                                    <h4 style="margin: 0 0 1.25rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim);">Professional Info</h4>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                        <div class="form-group" style="margin-bottom: 0;">
+                                            <label>Job Title</label>
+                                            <input type="text" id="editJobTitle" placeholder="e.g. Software Engineer" value="${user.jobTitle || ''}">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 0;">
+                                            <label>Department</label>
+                                            <input type="text" id="editDepartment" placeholder="e.g. Engineering" value="${user.department || ''}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label>Availability Status</label>
+                                        <select id="editAvailability" style="width: 100%; box-sizing: border-box; height: 42px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0.5rem 0.75rem; background: white; font-size: 0.95rem;">
+                                            <option value="Available" ${user.availability === 'Available' ? 'selected' : ''}>Available / Online</option>
+                                            <option value="Busy" ${user.availability === 'Busy' ? 'selected' : ''}>Busy / DND</option>
+                                            <option value="Away" ${user.availability === 'Away' ? 'selected' : ''}>Away / OOO</option>
+                                            <option value="Meeting" ${user.availability === 'Meeting' ? 'selected' : ''}>In a Meeting</option>
+                                        </select>
                                     </div>
                                 </div>
 
@@ -653,6 +705,9 @@
                         skills: document.getElementById('editSkills').value,
                         github: document.getElementById('editGithub').value,
                         linkedin: document.getElementById('editLinkedin').value,
+                        jobTitle: document.getElementById('editJobTitle').value.trim(),
+                        department: document.getElementById('editDepartment').value.trim(),
+                        availability: document.getElementById('editAvailability').value,
                         customContributions: validContributions
                     };
 
