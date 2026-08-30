@@ -70,6 +70,13 @@ export function initSidebar() {
                     </div>
                 </a>
 
+                <a href="chat.html" class="nav-link ${path.includes('chat') ? 'active' : ''}">
+                    <div class="nav-link-content">
+                        <i class="fas fa-comments"></i>
+                        <span>Chat & Call</span>
+                    </div>
+                </a>
+
                 <div class="nav-section-header">GENERAL</div>
 
                 <a href="${user.role === 'admin' ? 'members.html' : 'profile.html?id=' + user.id}" class="nav-link ${(path.includes('members') && user.role === 'admin') || (path.includes('profile') && user.role === 'member') ? 'active' : ''}">
