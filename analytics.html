@@ -198,13 +198,13 @@
                 <p style="color: var(--analytics-text-dim); font-size: 0.95rem; margin-top: 0.25rem;">Contributions per week to main, excluding merge commits</p>
             </div>
             <!-- Filters -->
-            <div style="display: flex; gap: 1rem;">
-                <select class="analytics-select" id="periodSelect">
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; width: 100%; max-width: 500px;">
+                <select class="analytics-select" id="periodSelect" style="flex: 1; min-width: 140px;">
                     <option value="90">Period: Last 3 months</option>
                     <option value="30">Period: Last 30 days</option>
                     <option value="365">Period: Last 1 year</option>
                 </select>
-                <select class="analytics-select" id="metricSelect">
+                <select class="analytics-select" id="metricSelect" style="flex: 1; min-width: 180px;">
                     <option value="performance">Contributions: Member Performance</option>
                     <option value="submissions">Contributions: Work Submissions</option>
                     <option value="attendance">Contributions: Attendance Presence</option>

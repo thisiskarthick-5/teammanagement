@@ -212,8 +212,8 @@
 
                     return `
                     <div class="glass task-card animate-in">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem;">
-                            <div style="flex: 1;">
+                        <div class="responsive-flex task-card-header" style="justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.5rem;">
+                            <div style="flex: 1; min-width: 200px;">
                                 <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem;">
                                     <span class="status-pill ${statusClass}">${t.status}</span>
                                     <h2 style="margin: 0; font-size: 1.35rem;">${t.title}</h2>
