@@ -93,6 +93,13 @@ export function initSidebar() {
                     </div>
                 </a>
 
+                <a href="javascript:void(0)" onclick="if(window.installTeamSyncPWA){window.installTeamSyncPWA();}else{alert('TeamSync is already installed or ready via browser address bar.');}" class="nav-link" id="navInstallApp">
+                    <div class="nav-link-content" style="color: var(--primary);">
+                        <i class="fas fa-download" style="color: var(--primary);"></i>
+                        <span style="font-weight: 700;">Install App</span>
+                    </div>
+                </a>
+
                 <a href="javascript:void(0)" onclick="logout()" class="nav-link">
                     <div class="nav-link-content" style="color: #ef4444;">
                         <i class="fas fa-sign-out-alt" style="color: #ef4444;"></i>

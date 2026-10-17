@@ -3,6 +3,13 @@
 
 <head>
     <link rel="icon" type="image/png" href="logo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TeamSync">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/pwa.js" defer></script>
 </head>
 
 <body>
@@ -43,6 +51,9 @@
             </ul>
 
             <div style="display: flex; align-items: center; gap: 1rem;">
+                <button onclick="if(window.installTeamSyncPWA){window.installTeamSyncPWA();}else{alert('TeamSync is installable directly via your browser address bar icon or mobile menu.');}" class="btn-nav-outline hide-mobile" style="color: #ade235; border-color: rgba(173, 226, 53, 0.4); display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; padding: 0.5rem 1rem;">
+                    <i class="fas fa-download"></i> Install App
+                </button>
                 <button id="authBtnLogin" class="btn-nav-outline" style="color: white; border-color: rgba(255,255,255,0.25);">Sign In</button>
                 <button id="authBtnRegister" class="btn-lime-pill">Get Started</button>
                 <button class="mobile-nav-toggle" id="mobileToggle" style="color: white;">
